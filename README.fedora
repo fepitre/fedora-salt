@@ -1,0 +1,7 @@
+These packages are *optional* dependencies for salt. By default, they are not included in the salt RPMs.
+Feel free to yum install any of these packages.
+
+MySQL-python 
+libvirt-python 
+yum
+
