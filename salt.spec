@@ -9,8 +9,8 @@
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
 Name: salt
-Version: 0.9.4
-Release: 7%{?dist}
+Version: 0.9.6
+Release: 2%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -34,6 +34,7 @@ BuildRequires: python26-crypto
 BuildRequires: python26-devel
 BuildRequires: python26-PyYAML
 BuildRequires: python26-m2crypto
+BuildRequires: python26-msgpack
 
 Requires: python26-crypto
 Requires: python26-zmq
@@ -41,6 +42,7 @@ Requires: python26-jinja2
 Requires: python26-PyYAML
 Requires: python26-m2crypto
 Requires: python26-PyXML
+Requires: python26-msgpack
 
 %else
 
@@ -49,6 +51,7 @@ BuildRequires: python-crypto
 BuildRequires: python-devel
 BuildRequires: PyYAML
 BuildRequires: m2crypto
+BuildRequires: python-msgpack
 
 Requires: python-crypto
 Requires: python-zmq
@@ -56,6 +59,7 @@ Requires: python-jinja2
 Requires: PyYAML
 Requires: m2crypto
 Requires: PyXML
+Requires: python-msgpack
 
 %endif
 
@@ -72,7 +76,6 @@ BuildRequires: systemd-units
 
 %endif
 
-# These packages are *optional* dependencies and not required.
 #Requires: MySQL-python libvirt-python yum
 
 %description
@@ -110,8 +113,6 @@ Salt minion is queried and controlled from the master.
 rm -rf $RPM_BUILD_ROOT
 %{__python} setup.py install -O1 --root $RPM_BUILD_ROOT
 
-install -p %{SOURCE7} .
-
 %if ! (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
 mkdir -p $RPM_BUILD_ROOT%{_initrddir}
 install -p %{SOURCE1} $RPM_BUILD_ROOT%{_initrddir}/
@@ -123,6 +124,11 @@ install -p -m 0644 %{SOURCE4} $RPM_BUILD_ROOT%{_unitdir}/
 install -p -m 0644 %{SOURCE5} $RPM_BUILD_ROOT%{_unitdir}/
 install -p -m 0644 %{SOURCE6} $RPM_BUILD_ROOT%{_unitdir}/
 %endif
+
+install -p %{SOURCE7} .
+
+install -p -m 0640 $RPM_BUILD_ROOT%{_sysconfdir}/salt/minion.template $RPM_BUILD_ROOT%{_sysconfdir}/salt/minion
+install -p -m 0640 $RPM_BUILD_ROOT%{_sysconfdir}/salt/master.template $RPM_BUILD_ROOT%{_sysconfdir}/salt/master
  
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -148,7 +154,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_unitdir}/salt-minion.service
 %endif
 
-%config(noreplace) /etc/salt/minion
+%config(noreplace) %{_sysconfdir}/salt/minion
+%config %{_sysconfdir}/salt/minion.template
 
 %files -n salt-master
 %defattr(-,root,root)
@@ -171,7 +178,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_unitdir}/salt-master.service
 %{_unitdir}/salt-syndic.service
 %endif
-%config(noreplace) /etc/salt/master
+%config(noreplace) %{_sysconfdir}/salt/master
+%config %{_sysconfdir}/salt/master.template
 
 %if ! (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
 
@@ -247,8 +255,11 @@ fi
 %endif
 
 %changelog
-* Sun Jan 15 2012 Clint Savage <herlo1@gmail.com> - 0.9.4-7
-- Removed optional requires from RPM and documented in added README.fedora
+* Tue Jan 24 2012 Clint Savage <herlo1@gmail.com> - 0.9.6-2
+- Added README.fedora and removed deps for optional modules
+
+* Sat Jan 21 2012 Clint Savage <herlo1@gmail.com> - 0.9.6-1
+- New upstream release
 
 * Sun Jan 8 2012 Clint Savage <herlo1@gmail.com> - 0.9.4-6
 - Missed some critical elements for SysV and rpmlint cleanup
