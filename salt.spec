@@ -28,7 +28,9 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch: noarch
 
+%ifarch %{ix86} x86_64
 Requires: dmidecode
+%endif
 
 %if 0%{?with_python26}
 BuildRequires: python26-zmq
@@ -256,6 +258,9 @@ fi
 %endif
 
 %changelog
+* Tue Apr 17 2012 Peter Robinson <pbrobinson@fedoraproject.org> - 0.9.8-2
+- dmidecode is x86 only
+
 * Wed Mar 21 2012 Clint Savage <herlo1@gmail.com> - 0.9.8-1
 - Moved to upstream release 0.9.8
 
