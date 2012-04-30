@@ -9,8 +9,8 @@
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
 Name: salt
-Version: 0.9.8
-Release: 2%{?dist}
+Version: 0.9.9.1
+Release: 1%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -130,8 +130,11 @@ install -p -m 0644 %{SOURCE6} $RPM_BUILD_ROOT%{_unitdir}/
 
 install -p %{SOURCE7} .
 
-install -p -m 0640 $RPM_BUILD_ROOT%{_sysconfdir}/salt/minion.template $RPM_BUILD_ROOT%{_sysconfdir}/salt/minion
-install -p -m 0640 $RPM_BUILD_ROOT%{_sysconfdir}/salt/master.template $RPM_BUILD_ROOT%{_sysconfdir}/salt/master
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/salt/
+install -p -m 0640 conf/minion.template $RPM_BUILD_ROOT%{_sysconfdir}/salt/minion
+install -p -m 0640 conf/minion.template $RPM_BUILD_ROOT%{_sysconfdir}/salt/minion.template
+install -p -m 0640 conf/master.template $RPM_BUILD_ROOT%{_sysconfdir}/salt/master
+install -p -m 0640 conf/master.template $RPM_BUILD_ROOT%{_sysconfdir}/salt/master.template
  
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -258,6 +261,9 @@ fi
 %endif
 
 %changelog
+* Sat Apr 28 2012 Clint Savage <herlo1@gmail.com> - 0.9.9.1-1
+- Moved to upstream release 0.9.9.1
+
 * Tue Apr 17 2012 Peter Robinson <pbrobinson@fedoraproject.org> - 0.9.8-2
 - dmidecode is x86 only
 
