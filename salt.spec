@@ -10,7 +10,7 @@
 
 Name: salt
 Version: 0.10.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -261,6 +261,9 @@ fi
 %endif
 
 %changelog
+* Sat Jul 21 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.10.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
 * Sat Jun 16 2012 Clint Savage <herlo1@gmail.com> - 0.10.1-1
 - Moved to upstream release 0.10.1
 
