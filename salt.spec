@@ -10,7 +10,7 @@
 
 Name: salt
 Version: 0.10.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -45,7 +45,6 @@ Requires: python26-zmq
 Requires: python26-jinja2
 Requires: python26-PyYAML
 Requires: python26-m2crypto
-Requires: python26-PyXML
 Requires: python26-msgpack
 
 %else
@@ -62,7 +61,6 @@ Requires: python-zmq
 Requires: python-jinja2
 Requires: PyYAML
 Requires: m2crypto
-Requires: PyXML
 Requires: python-msgpack
 
 %endif
@@ -261,6 +259,9 @@ fi
 %endif
 
 %changelog
+* Wed Jul 25 2012 Clint Savage <herlo1@gmail.com> - 0.10.1-2
+- Removed dependency on PyXML
+
 * Sat Jun 16 2012 Clint Savage <herlo1@gmail.com> - 0.10.1-1
 - Moved to upstream release 0.10.1
 
