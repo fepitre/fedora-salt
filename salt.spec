@@ -11,7 +11,7 @@
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
 Name: salt
-Version: 0.13.1
+Version: 0.13.2
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -103,8 +103,6 @@ Requires(postun): systemd-units
 BuildRequires: systemd-units
 
 %endif
-
-#Requires: MySQL-python libvirt-python yum
 
 %description
 Salt is a distributed remote execution system used to execute commands and 
@@ -311,6 +309,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Wed Mar 13 2013 Clint Savage <herlo1@gmail.com> - 0.13.2-1
+- Update to upstream patch release 0.13.2
+
 * Fri Feb 15 2013 Clint Savage <herlo1@gmail.com> - 0.13.1-1
 - Update to upstream patch release 0.13.1
 - Add unittest support
