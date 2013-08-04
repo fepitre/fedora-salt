@@ -12,7 +12,7 @@
 
 Name: salt
 Version: 0.16.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -310,6 +310,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Sun Aug 04 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.16.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
 * Tue Jul 9 2013 Clint Savage <herlo1@gmail.com> - 0.16.0-1
 - Update to feature release 0.16.0
 
