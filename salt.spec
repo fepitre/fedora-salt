@@ -11,7 +11,7 @@
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
 Name: salt
-Version: 0.16.3
+Version: 0.16.4
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -310,6 +310,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Sun Sep 08 2013 Erik Johnson <erik@saltstack.com> - 0.16.4-1
+- Update to patch release 0.16.4
+
 * Thu Aug 15 2013 Andrew Niemantsverdriet <andrewniemants@gmail.com> - 0.16.3-1
 - Update to patch release 0.16.3
 
