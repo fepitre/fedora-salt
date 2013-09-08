@@ -6,6 +6,7 @@ libvirt-python
 python-mako
 pymongo
 python-redis / redis
+GitPython
 
 A semi-canonical list of the optional salt modules can be found at 
 https://github.com/saltstack/salt/blob/develop/doc/conf.py#L30
