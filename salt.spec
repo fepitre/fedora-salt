@@ -5,8 +5,7 @@
 %define __python %{_bindir}/python%{?pybasever}
 %endif
 
-# Tests disabled for this release because of 2 faulty tests
-%global include_tests 0
+%global include_tests 1
 
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
