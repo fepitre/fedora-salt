@@ -16,7 +16,7 @@
 
 Name: salt
 Version: 0.17.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -31,6 +31,7 @@ Source5: %{name}-master.service
 Source6: %{name}-syndic.service
 Source7: %{name}-minion.service
 Source8: README.fedora
+Patch0:  issue8560.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -50,7 +51,6 @@ BuildRequires: python26-devel
 BuildRequires: python26-jinja2
 BuildRequires: python26-m2crypto
 BuildRequires: python26-msgpack
-BuildRequires: python26-pip
 BuildRequires: python26-zmq
 BuildRequires: python26-PyYAML
 
@@ -137,6 +137,7 @@ Salt minion is queried and controlled from the master.
 
 %prep
 %setup -c
+%patch0
 %setup -T -D -a 1
 
 %build
@@ -319,6 +320,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Tue Nov 19 2013 Erik Johnson <erik@saltstack.com> - 0.17.2-2
+- Patched to fix pkgrepo.managed regression
+
 * Mon Nov 18 2013 Erik Johnson <erik@saltstack.com> - 0.17.2-1
 - Update to bugfix release 0.17.2
 
