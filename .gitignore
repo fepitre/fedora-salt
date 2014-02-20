@@ -33,3 +33,11 @@
 /salt-0.17.4.tar.gz
 /salt-0.17.5.tar.gz
 /SaltTesting-0.5.4.tar.gz
+/salt-2014.1.0.tar.gz
+/README.fedora
+/salt-master
+/salt-master.service
+/salt-minion
+/salt-minion.service
+/salt-syndic
+/salt-syndic.service
