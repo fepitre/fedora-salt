@@ -5,7 +5,7 @@
 %define __python %{_bindir}/python%{?pybasever}
 %endif
 
-%global include_tests 1
+%global include_tests 0
 
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
@@ -15,7 +15,7 @@
 %define _salttesting_ver 0.5.4
 
 Name: salt
-Version: 2014.1.0
+Version: 2014.1.1
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -320,6 +320,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Fri Mar 21 2014 Erik Johnson <erik@saltstack.com> - 2014.1.1-1
+- Update to bugfix release 2014.1.1
+
 * Thu Feb 20 2014 Erik Johnson <erik@saltstack.com> - 2014.1.0-1
 - Update to feature release 2014.1.0
 
