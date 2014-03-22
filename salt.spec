@@ -5,7 +5,7 @@
 %define __python %{_bindir}/python%{?pybasever}
 %endif
 
-%global include_tests 1
+%global include_tests 0
 
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
@@ -15,7 +15,7 @@
 %define _salttesting_ver 0.5.4
 
 Name: salt
-Version: 0.17.5
+Version: 2014.1.1
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -69,6 +69,8 @@ BuildRequires: python-unittest2
 # https://github.com/saltstack/salt/issues/3749
 BuildRequires: python-mock
 BuildRequires: git
+
+Requires: python-libcloud
 %endif
 
 BuildRequires: m2crypto
@@ -199,6 +201,7 @@ rm -rf $RPM_BUILD_ROOT
 %files -n salt-master
 %defattr(-,root,root)
 %doc %{_mandir}/man1/salt.1.*
+%doc %{_mandir}/man1/salt-cloud.1.*
 %doc %{_mandir}/man1/salt-cp.1.*
 %doc %{_mandir}/man1/salt-key.1.*
 %doc %{_mandir}/man1/salt-master.1.*
@@ -206,6 +209,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc %{_mandir}/man1/salt-ssh.1.*
 %doc %{_mandir}/man1/salt-syndic.1.*
 %{_bindir}/salt
+%{_bindir}/salt-cloud
 %{_bindir}/salt-cp
 %{_bindir}/salt-key
 %{_bindir}/salt-master
@@ -318,6 +322,12 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Fri Mar 21 2014 Erik Johnson <erik@saltstack.com> - 2014.1.1-1
+- Update to bugfix release 2014.1.1
+
+* Thu Feb 20 2014 Erik Johnson <erik@saltstack.com> - 2014.1.0-1
+- Update to feature release 2014.1.0
+
 * Mon Jan 27 2014 Erik Johnson <erik@saltstack.com> - 0.17.5-1
 - Update to bugfix release 0.17.5
 
