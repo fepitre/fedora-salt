@@ -15,7 +15,7 @@
 %define _salttesting_ver 0.5.4
 
 Name: salt
-Version: 2014.1.1
+Version: 2014.1.3
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -31,6 +31,7 @@ Source5: %{name}-master.service
 Source6: %{name}-syndic.service
 Source7: %{name}-minion.service
 Source8: README.fedora
+Patch0: fix-setup-py.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -138,6 +139,8 @@ Salt minion is queried and controlled from the master.
 
 %prep
 %setup -c
+cd %{name}-%{version}
+%patch0 -p1
 %setup -T -D -a 1
 
 %build
@@ -322,6 +325,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Fri Apr 18 2014 Erik Johnson <erik@saltstack.com> - 2014.1.3-1
+- Update to bugfix release 2014.1.3
+
 * Fri Mar 21 2014 Erik Johnson <erik@saltstack.com> - 2014.1.1-1
 - Update to bugfix release 2014.1.1
 
