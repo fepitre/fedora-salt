@@ -42,3 +42,5 @@
 /salt-syndic
 /salt-syndic.service
 /salt-2014.1.1.tar.gz
+/salt-2014.1.3.tar.gz
+/fix-setup-py.patch
