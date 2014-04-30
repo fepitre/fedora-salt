@@ -7,4 +7,3 @@ f66118a624fc7cbc5bcf01051c69e83a  salt-master.service
 8ef6ab9bf9750f146d31bd8da9da963b  salt-minion.service
 9dd4f6cdd608f8bca63f9a5b7655073b  salt-syndic
 97e1daa0f7232f48d109b62890b68d0e  salt-syndic.service
-ae758da300e33cab7dd797709fe0982a  fix-setup-py.patch
