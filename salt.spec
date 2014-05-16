@@ -16,7 +16,7 @@
 
 Name: salt
 Version: 2014.1.4
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -41,7 +41,7 @@ Requires: dmidecode
 %endif
 
 Requires: pciutils
-Requires: yum-utils
+Requires: yum-utils >= 1.1.16-16
 Requires: sshpass
 
 %if 0%{?with_python26}
@@ -322,6 +322,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Fri May 16 2014 Erik Johnson <erik@saltstack.com> - 2014.1.4-2
+- Set minimum yum-utils release
+
 * Tue May 6 2014 Erik Johnson <erik@saltstack.com> - 2014.1.4-1
 - Update to bugfix release 2014.1.4
 
