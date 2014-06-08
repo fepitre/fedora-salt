@@ -16,7 +16,7 @@
 
 Name: salt
 Version: 2014.1.4
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -322,6 +322,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Sun Jun 08 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2014.1.4-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
 * Tue May 6 2014 Erik Johnson <erik@saltstack.com> - 2014.1.4-1
 - Update to bugfix release 2014.1.4
 
