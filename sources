@@ -1,9 +1,2 @@
-0d29af68d2996ab22d86f43637775df4  salt-2014.1.0.tar.gz
-f6ea7c5cc6600035bee122dae8225f4b  SaltTesting-0.5.4.tar.gz
-c3b42a778ecbb6e91b5d4d9e752b0c63  README.fedora
-7ea2a1ce8fefec682cd89b619db39525  salt-master
-3be813f49bf5ab9580cfc23e915eea4b  salt-master.service
-353763201289d2fc57d53263c4dad524  salt-minion
-8ef6ab9bf9750f146d31bd8da9da963b  salt-minion.service
-9dd4f6cdd608f8bca63f9a5b7655073b  salt-syndic
-97e1daa0f7232f48d109b62890b68d0e  salt-syndic.service
+3a34a45c34e29e83572977d72258fc37  salt-2014.1.4.tar.gz
+4e91e01fc1819c783097dd484947442d  SaltTesting-2014.4.24.tar.gz
