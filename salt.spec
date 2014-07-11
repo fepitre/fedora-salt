@@ -16,7 +16,7 @@
 
 Name: salt
 Version: 2014.1.7
-Release: 1%{?dist}
+Release: 3%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -31,6 +31,7 @@ Source5: %{name}-master.service
 Source6: %{name}-syndic.service
 Source7: %{name}-minion.service
 Source8: README.fedora
+Source9: logrotate.salt
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -161,6 +162,8 @@ install -p -m 0644 %{SOURCE7} $RPM_BUILD_ROOT%{_unitdir}/
 %endif
 
 install -p %{SOURCE8} .
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/
+install -p %{SOURCE9} $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/salt
 
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/salt/
 install -p -m 0640 conf/minion $RPM_BUILD_ROOT%{_sysconfdir}/salt/minion
@@ -187,6 +190,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %doc %{_mandir}/man1/salt-call.1.*
 %doc %{_mandir}/man1/salt-minion.1.*
+%{_sysconfdir}/logrotate.d/salt
 %{_bindir}/salt-minion
 %{_bindir}/salt-call
 
@@ -322,6 +326,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Thu Jul 10 2014 Erik Johnson <erik@saltstack.com> - 2014.1.7-3
+- Add logrotate script
+
 * Thu Jul 10 2014 Erik Johnson <erik@saltstack.com> - 2014.1.7-1
 - Update to bugfix release 2014.1.7
 
