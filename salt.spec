@@ -15,7 +15,7 @@
 %define _salttesting_ver 2014.4.24
 
 Name: salt
-Version: 2014.1.7
+Version: 2014.1.10
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -31,6 +31,7 @@ Source5: %{name}-master.service
 Source6: %{name}-syndic.service
 Source7: %{name}-minion.service
 Source8: README.fedora
+Source9: logrotate.salt
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -109,6 +110,7 @@ Requires(postun): systemd-units
 %endif
 
 BuildRequires: systemd-units
+Requires:      systemd-python
 
 %endif
 
@@ -132,6 +134,7 @@ The Salt master is the central server to which all minions connect.
 Summary: Client component for salt, a parallel remote execution system 
 Group:   System Environment/Daemons
 Requires: salt = %{version}-%{release}
+Requires: systemd-python
 
 %description -n salt-minion
 Salt minion is queried and controlled from the master.
@@ -161,6 +164,8 @@ install -p -m 0644 %{SOURCE7} $RPM_BUILD_ROOT%{_unitdir}/
 %endif
 
 install -p %{SOURCE8} .
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/
+install -p %{SOURCE9} $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/salt
 
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/salt/
 install -p -m 0640 conf/minion $RPM_BUILD_ROOT%{_sysconfdir}/salt/minion
@@ -180,6 +185,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
 %{python_sitelib}/%{name}/*
 %{python_sitelib}/%{name}-%{version}-py?.?.egg-info
+%{_sysconfdir}/logrotate.d/salt
 %doc %{_mandir}/man7/salt.7.*
 %doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/README.fedora
 
@@ -322,6 +328,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Mon Aug 4 2014 Erik Johnson <erik@saltstack.com> - 2014.1.10-1
+- Update to bugfix release 2014.1.10
+
 * Thu Jul 10 2014 Erik Johnson <erik@saltstack.com> - 2014.1.7-1
 - Update to bugfix release 2014.1.7
 
