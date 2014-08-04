@@ -110,6 +110,7 @@ Requires(postun): systemd-units
 %endif
 
 BuildRequires: systemd-units
+Requires:      systemd-python
 
 %endif
 
