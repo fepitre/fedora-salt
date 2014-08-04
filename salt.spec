@@ -15,8 +15,8 @@
 %define _salttesting_ver 2014.4.24
 
 Name: salt
-Version: 2014.1.7
-Release: 3%{?dist}
+Version: 2014.1.10
+Release: 1%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -110,6 +110,7 @@ Requires(postun): systemd-units
 %endif
 
 BuildRequires: systemd-units
+Requires:      systemd-python
 
 %endif
 
@@ -125,6 +126,7 @@ servers, handle them quickly and through a simple and manageable interface.
 Summary: Management component for salt, a parallel remote execution system 
 Group:   System Environment/Daemons
 Requires: salt = %{version}-%{release}
+Requires: systemd-python
 
 %description -n salt-master 
 The Salt master is the central server to which all minions connect.
@@ -326,6 +328,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Mon Aug 4 2014 Erik Johnson <erik@saltstack.com> - 2014.1.10-1
+- Update to bugfix release 2014.1.10
+
 * Thu Jul 10 2014 Erik Johnson <erik@saltstack.com> - 2014.1.7-3
 - Add logrotate script
 
