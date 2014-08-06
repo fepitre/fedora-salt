@@ -125,6 +125,9 @@ servers, handle them quickly and through a simple and manageable interface.
 Summary: Management component for salt, a parallel remote execution system 
 Group:   System Environment/Daemons
 Requires: salt = %{version}-%{release}
+%if ! (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
+Requires: systemd-python
+%endif
 
 %description -n salt-master 
 The Salt master is the central server to which all minions connect.
