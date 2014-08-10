@@ -16,7 +16,7 @@
 
 Name: salt
 Version: 2014.1.10
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -332,10 +332,13 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
-* Tue Aug 5 2014 Erik Johnson <erik@saltstack.com> - 2014.1.10-2
+* Sun Aug 10 2014 Erik Johnson <erik@saltstack.com> - 2014.1.10-4
+- Fix incorrect conditional
+
+* Tue Aug  5 2014 Erik Johnson <erik@saltstack.com> - 2014.1.10-2
 - Deploy cachedir with package
 
-* Mon Aug 4 2014 Erik Johnson <erik@saltstack.com> - 2014.1.10-1
+* Mon Aug  4 2014 Erik Johnson <erik@saltstack.com> - 2014.1.10-1
 - Update to bugfix release 2014.1.10
 
 * Thu Jul 10 2014 Erik Johnson <erik@saltstack.com> - 2014.1.7-3
