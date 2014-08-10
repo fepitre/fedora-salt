@@ -16,7 +16,7 @@
 
 Name: salt
 Version: 2014.1.10
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -125,7 +125,7 @@ servers, handle them quickly and through a simple and manageable interface.
 Summary: Management component for salt, a parallel remote execution system 
 Group:   System Environment/Daemons
 Requires: salt = %{version}-%{release}
-%if ! (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
+%if (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
 Requires: systemd-python
 %endif
 
