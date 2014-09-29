@@ -12,10 +12,10 @@
 %{!?pythonpath: %global pythonpath %(%{__python} -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
 
 %define _salttesting SaltTesting
-%define _salttesting_ver 2014.4.24
+%define _salttesting_ver 2014.8.5
 
 Name: salt
-Version: 2014.1.5
+Version: 2014.1.11
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -31,9 +31,9 @@ Source5: %{name}-master.service
 Source6: %{name}-syndic.service
 Source7: %{name}-minion.service
 Source8: README.fedora
+Source9: logrotate.salt
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-
 BuildArch: noarch
 
 %ifarch %{ix86} x86_64
@@ -109,6 +109,7 @@ Requires(postun): systemd-units
 %endif
 
 BuildRequires: systemd-units
+Requires:      systemd-python
 
 %endif
 
@@ -124,6 +125,9 @@ servers, handle them quickly and through a simple and manageable interface.
 Summary: Management component for salt, a parallel remote execution system 
 Group:   System Environment/Daemons
 Requires: salt = %{version}-%{release}
+%if (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
+Requires: systemd-python
+%endif
 
 %description -n salt-master 
 The Salt master is the central server to which all minions connect.
@@ -144,27 +148,31 @@ Salt minion is queried and controlled from the master.
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
-%{__python} setup.py install -O1 --root $RPM_BUILD_ROOT
+%{__python} setup.py install -O1 --root %{buildroot}
+
+install -d -m 0755 %{buildroot}%{_var}/cache/salt
 
 %if ! (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
-mkdir -p $RPM_BUILD_ROOT%{_initrddir}
-install -p %{SOURCE2} $RPM_BUILD_ROOT%{_initrddir}/
-install -p %{SOURCE3} $RPM_BUILD_ROOT%{_initrddir}/
-install -p %{SOURCE4} $RPM_BUILD_ROOT%{_initrddir}/
+mkdir -p %{buildroot}%{_initrddir}
+install -p %{SOURCE2} %{buildroot}%{_initrddir}/
+install -p %{SOURCE3} %{buildroot}%{_initrddir}/
+install -p %{SOURCE4} %{buildroot}%{_initrddir}/
 %else
-mkdir -p $RPM_BUILD_ROOT%{_unitdir}
-install -p -m 0644 %{SOURCE5} $RPM_BUILD_ROOT%{_unitdir}/
-install -p -m 0644 %{SOURCE6} $RPM_BUILD_ROOT%{_unitdir}/
-install -p -m 0644 %{SOURCE7} $RPM_BUILD_ROOT%{_unitdir}/
+mkdir -p %{buildroot}%{_unitdir}
+install -p -m 0644 %{SOURCE5} %{buildroot}%{_unitdir}/
+install -p -m 0644 %{SOURCE6} %{buildroot}%{_unitdir}/
+install -p -m 0644 %{SOURCE7} %{buildroot}%{_unitdir}/
 %endif
 
 install -p %{SOURCE8} .
+mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d/
+install -p %{SOURCE9} %{buildroot}%{_sysconfdir}/logrotate.d/salt
 
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/salt/
-install -p -m 0640 conf/minion $RPM_BUILD_ROOT%{_sysconfdir}/salt/minion
-install -p -m 0640 conf/master $RPM_BUILD_ROOT%{_sysconfdir}/salt/master
+mkdir -p %{buildroot}%{_sysconfdir}/salt/
+install -p -m 0640 conf/minion %{buildroot}%{_sysconfdir}/salt/minion
+install -p -m 0640 conf/master %{buildroot}%{_sysconfdir}/salt/master
 
 %if ((0%{?rhel} >= 6 || 0%{?fedora} > 12) && 0%{?include_tests})
 %check
@@ -173,13 +181,15 @@ PYTHONPATH=%{pythonpath}:$RPM_BUILD_DIR/%{name}-%{version}/%{_salttesting}-%{_sa
 %endif
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
 %doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
 %{python_sitelib}/%{name}/*
 %{python_sitelib}/%{name}-%{version}-py?.?.egg-info
+%{_sysconfdir}/logrotate.d/salt
+%{_var}/cache/salt
 %doc %{_mandir}/man7/salt.7.*
 %doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/README.fedora
 
@@ -322,6 +332,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Mon Sep 29 2014 Erik Johnson <erik@saltstack.com> - 2014.1.11-1
+- Update to bugfix release 2014.1.11
+
 * Wed Jun 11 2014 Erik Johnson <erik@saltstack.com> - 2014.1.5-1
 - Update to bugfix release 2014.1.5
 
