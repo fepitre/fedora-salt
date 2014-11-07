@@ -16,7 +16,7 @@
 
 Name: salt
 Version: 2014.7.0
-Release: 1%{?dist}
+Release: 3%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -149,6 +149,14 @@ The Salt syndic is a master daemon which can receive instruction from a
 higher-level master, allowing for tiered organization of your Salt
 infrastructure.
 
+%package api
+Summary: REST API for Salt, a parallel remote execution system
+Group:   System administration tools
+Requires: %{name}-master = %{version}-%{release}
+
+%description api
+salt-api provides a REST interface to the Salt master.
+
 %package cloud
 Summary: Cloud provisioner for Salt, a parallel remote execution system
 Group:   System administration tools
@@ -236,24 +244,20 @@ rm -rf %{buildroot}
 %files master
 %defattr(-,root,root)
 %doc %{_mandir}/man1/salt.1.*
-%doc %{_mandir}/man1/salt-api.1.*
 %doc %{_mandir}/man1/salt-cp.1.*
 %doc %{_mandir}/man1/salt-key.1.*
 %doc %{_mandir}/man1/salt-master.1.*
 %doc %{_mandir}/man1/salt-run.1.*
 %doc %{_mandir}/man1/salt-unity.1.*
 %{_bindir}/salt
-%{_bindir}/salt-api
 %{_bindir}/salt-cp
 %{_bindir}/salt-key
 %{_bindir}/salt-master
 %{_bindir}/salt-run
 %{_bindir}/salt-unity
 %if ! (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
-%attr(0755, root, root) %{_initrddir}/salt-api
 %attr(0755, root, root) %{_initrddir}/salt-master
 %else
-%{_unitdir}/salt-api.service
 %{_unitdir}/salt-master.service
 %endif
 %config(noreplace) %{_sysconfdir}/salt/master
@@ -278,6 +282,16 @@ rm -rf %{buildroot}
 %attr(0755, root, root) %{_initrddir}/salt-syndic
 %else
 %{_unitdir}/salt-syndic.service
+%endif
+
+%files api
+%defattr(-,root,root)
+%doc %{_mandir}/man1/salt-api.1.*
+%{_bindir}/salt-api
+%if ! (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
+%attr(0755, root, root) %{_initrddir}/salt-api
+%else
+%{_unitdir}/salt-api.service
 %endif
 
 %files cloud
@@ -415,6 +429,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Fri Nov  7 2014 Erik Johnson <erik@saltstack.com> - 2014.7.0-3
+- Make salt-api its own package
+
 * Fri Oct 31 2014 Erik Johnson <erik@saltstack.com> - 2014.7.0-1
 - Update to feature release candidate 2014.7.0
 
