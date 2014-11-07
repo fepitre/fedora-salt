@@ -16,7 +16,7 @@
 
 Name: salt
 Version: 2014.7.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -415,23 +415,14 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
-* Fri Oct 31 2014 Erik Johnson <erik@saltstack.com> - 2014.7.0rc7-1
-- Update to feature release candidate 2014.7.0rc7
+* Thu Nov  6 2014 Erik Johnson <erik@saltstack.com> - 2014.7.0-2
+- Fix changelog
 
-* Tue Oct 23 2014 Erik Johnson <erik@saltstack.com> - 2014.7.0rc6-1
-- Update to feature release candidate 2014.7.0rc6
+* Thu Nov  6 2014 Erik Johnson <erik@saltstack.com> - 2014.7.0-1
+- Update to feature release 2014.7.0
 
-* Tue Oct 21 2014 Erik Johnson <erik@saltstack.com> - 2014.7.0rc5-3
-- Adjust dependencies for salt-cloud
-
-* Mon Oct 20 2014 Erik Johnson <erik@saltstack.com> - 2014.7.0rc5-2
-- Update to feature release candidate 2014.7.0rc5
-
-* Mon Oct 20 2014 Erik Johnson <erik@saltstack.com> - 2014.7.0rc4-1
-- Update to feature release candidate 2014.7.0rc4
-
-* Fri Oct 10 2014 Erik Johnson <erik@saltstack.com> - 2014.7.0rc3-1
-- Update to feature release candidate 2014.7.0rc3
+* Fri Oct 17 2014 Erik Johnson <erik@saltstack.com> - 2014.1.13-1
+- Update to bugfix release 2014.1.13
 
 * Mon Sep 29 2014 Erik Johnson <erik@saltstack.com> - 2014.1.11-1
 - Update to bugfix release 2014.1.11
@@ -448,7 +439,7 @@ rm -rf %{buildroot}
 * Thu Jul 10 2014 Erik Johnson <erik@saltstack.com> - 2014.1.7-3
 - Add logrotate script
 
-* Thu Jul 10 2014 Erik Johnson <erik@saltstack.com> - 2014.1.7-2
+* Thu Jul 10 2014 Erik Johnson <erik@saltstack.com> - 2014.1.7-1
 - Update to bugfix release 2014.1.7
 
 * Wed Jun 11 2014 Erik Johnson <erik@saltstack.com> - 2014.1.5-1
@@ -456,12 +447,6 @@ rm -rf %{buildroot}
 
 * Tue May  6 2014 Erik Johnson <erik@saltstack.com> - 2014.1.4-1
 - Update to bugfix release 2014.1.4
-
-* Fri Apr 18 2014 Erik Johnson <erik@saltstack.com> - 2014.1.3-1
-- Update to bugfix release 2014.1.3
-
-* Fri Mar 21 2014 Erik Johnson <erik@saltstack.com> - 2014.1.1-1
-- Update to bugfix release 2014.1.1
 
 * Thu Feb 20 2014 Erik Johnson <erik@saltstack.com> - 2014.1.0-1
 - Update to feature release 2014.1.0
