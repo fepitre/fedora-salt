@@ -15,8 +15,8 @@
 %define _salttesting_ver 2014.8.5
 
 Name: salt
-Version: 2014.7.0
-Release: 3%{?dist}
+Version: 2014.7.1
+Release: 1%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -218,7 +218,7 @@ install -p -m 0644 %{SOURCE9} %{buildroot}%{_unitdir}/
 
 install -p %{SOURCE10} .
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d/
-install -p %{SOURCE11} %{buildroot}%{_sysconfdir}/logrotate.d/salt
+install -p -m 0644 %{SOURCE11} %{buildroot}%{_sysconfdir}/logrotate.d/salt
 
 %if ((0%{?rhel} >= 6 || 0%{?fedora} > 12) && 0%{?include_tests})
 %check
@@ -238,12 +238,11 @@ rm -rf %{buildroot}
 %{python_sitelib}/%{name}-*-py?.?.egg-info
 %{_sysconfdir}/logrotate.d/salt
 %{_var}/cache/salt
-%doc %{_mandir}/man7/salt.7.*
 %doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/README.fedora
 
 %files master
 %defattr(-,root,root)
-%doc %{_mandir}/man1/salt.1.*
+%doc %{_mandir}/man7/salt.7.*
 %doc %{_mandir}/man1/salt-cp.1.*
 %doc %{_mandir}/man1/salt-key.1.*
 %doc %{_mandir}/man1/salt-master.1.*
@@ -429,6 +428,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Mon Jan 19 2015 Erik Johnson <erik@saltstack.com> - 2014.7.1-1
+- Update to bugfix release 2014.7.1
+
 * Fri Nov  7 2014 Erik Johnson <erik@saltstack.com> - 2014.7.0-3
 - Make salt-api its own package
 
