@@ -5,17 +5,17 @@
 %define __python %{_bindir}/python%{?pybasever}
 %endif
 
-%global include_tests 0
+%global include_tests 1
 
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 %{!?pythonpath: %global pythonpath %(%{__python} -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
 
 %define _salttesting SaltTesting
-%define _salttesting_ver 2014.8.5
+%define _salttesting_ver 2015.2.16
 
 Name: salt
-Version: 2014.7.1
+Version: 2014.7.2
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -34,6 +34,7 @@ Source8: %{name}-minion.service
 Source9: %{name}-api.service
 Source10: README.fedora
 Source11: logrotate.salt
+Patch0:  skip_tests_%{version}.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -44,7 +45,6 @@ Requires: dmidecode
 
 Requires: pciutils
 Requires: yum-utils
-Requires: sshpass
 
 %if 0%{?with_python26}
 
@@ -75,6 +75,11 @@ BuildRequires: python-unittest2
 BuildRequires: python-mock
 BuildRequires: git
 BuildRequires: python-libcloud
+
+%if ((0%{?rhel} == 6) && 0%{?include_tests})
+# argparse now a salt-testing requirement
+BuildRequires: python-argparse
+%endif
 
 %endif
 
@@ -178,6 +183,9 @@ of an agent (salt-minion) service.
 %prep
 %setup -c
 %setup -T -D -a 1
+
+cd %{name}-%{version}
+%patch0 -p1
 
 %build
 
@@ -428,6 +436,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Tue Feb 17 2015 Erik Johnson <erik@saltstack.com> - 2014.7.2-1
+- Update to bugfix release 2014.7.2
+
 * Mon Jan 19 2015 Erik Johnson <erik@saltstack.com> - 2014.7.1-1
 - Update to bugfix release 2014.7.1
 
