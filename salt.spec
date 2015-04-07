@@ -15,7 +15,7 @@
 %define _salttesting_ver 2015.2.16
 
 Name: salt
-Version: 2014.7.2
+Version: 2014.7.4
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -158,6 +158,7 @@ infrastructure.
 Summary: REST API for Salt, a parallel remote execution system
 Group:   System administration tools
 Requires: %{name}-master = %{version}-%{release}
+Requires: python-cherrypy
 
 %description api
 salt-api provides a REST interface to the Salt master.
@@ -166,6 +167,7 @@ salt-api provides a REST interface to the Salt master.
 Summary: Cloud provisioner for Salt, a parallel remote execution system
 Group:   System administration tools
 Requires: %{name}-master = %{version}-%{release}
+Requires: python-libcloud
 
 %description cloud
 The salt-cloud tool provisions new cloud VMs, installs salt-minion on them, and
