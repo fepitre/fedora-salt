@@ -12,10 +12,10 @@
 %{!?pythonpath: %global pythonpath %(%{__python} -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
 
 %define _salttesting SaltTesting
-%define _salttesting_ver 2015.2.16
+%define _salttesting_ver 2015.5.8
 
 Name: salt
-Version: 2014.7.5
+Version: 2015.5.0
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -34,7 +34,9 @@ Source8: %{name}-minion.service
 Source9: %{name}-api.service
 Source10: README.fedora
 Source11: logrotate.salt
-Patch0:  skip_tests_%{version}.patch
+
+Patch0:  salt-%{version}-tests.patch
+
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -445,6 +447,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Mon May 11 2015 Erik Johnson <erik@saltstack.com> - 2015.5.0-1
+- Update to feature release 2015.5.0
+
 * Fri Apr 17 2015 Erik Johnson <erik@saltstack.com> - 2014.7.5-1
 - Update to bugfix release 2014.7.5
 
