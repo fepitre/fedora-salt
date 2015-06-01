@@ -16,7 +16,7 @@
 
 Name: salt
 Version: 2015.5.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -46,6 +46,7 @@ Requires: dmidecode
 %endif
 
 Requires: pciutils
+Requires: which
 Requires: yum-utils
 
 %if 0%{?with_python26}
@@ -447,6 +448,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Mon Jun  1 2015 Erik Johnson <erik@saltstack.com> - 2015.5.1-2
+- Add missing dependency on which (RH #1226636)
+
 * Wed May 27 2015 Erik Johnson <erik@saltstack.com> - 2015.5.1-1
 - Update to bugfix release 2015.5.1
 
