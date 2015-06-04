@@ -15,8 +15,8 @@
 %define _salttesting_ver 2015.5.8
 
 Name: salt
-Version: 2015.5.1
-Release: 2%{?dist}
+Version: 2015.5.2
+Release: 1%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -448,6 +448,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Mon Jun  4 2015 Erik Johnson <erik@saltstack.com> - 2015.5.2-1
+- Update to bugfix release 2015.5.2
+
 * Mon Jun  1 2015 Erik Johnson <erik@saltstack.com> - 2015.5.1-2
 - Add missing dependency on which (RH #1226636)
 
