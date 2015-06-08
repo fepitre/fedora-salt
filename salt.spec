@@ -16,7 +16,7 @@
 
 Name: salt
 Version: 2015.5.2
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -326,7 +326,7 @@ rm -rf %{buildroot}
 %files ssh
 %doc %{_mandir}/man1/salt-ssh.1.*
 %{_bindir}/salt-ssh
-%{_sysconfdir}/salt/roster
+%config(noreplace) %{_sysconfdir}/salt/roster
 
 
 # less than RHEL 8 / Fedora 16
@@ -448,6 +448,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Mon Jun  4 2015 Erik Johnson <erik@saltstack.com> - 2015.5.2-3
+- Mark salt-ssh roster as a config file to prevent replacement
+
 * Mon Jun  4 2015 Erik Johnson <erik@saltstack.com> - 2015.5.2-2
 - Update skipped tests
 
