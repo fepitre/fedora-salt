@@ -16,7 +16,7 @@
 
 Name: salt
 Version: 2015.5.2
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -448,6 +448,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Fri Jun 19 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2015.5.2-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
 * Mon Jun  4 2015 Erik Johnson <erik@saltstack.com> - 2015.5.2-3
 - Mark salt-ssh roster as a config file to prevent replacement
 
