@@ -455,6 +455,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Fri Jul 10 2015 Erik Johnson <erik@saltstack.com> - 2015.5.3-4
+- Patch tests
+
 * Fri Jul 10 2015 Erik Johnson <erik@saltstack.com> - 2015.5.3-3
 - Patch init grain
 
@@ -464,13 +467,13 @@ rm -rf %{buildroot}
 * Fri Jun 19 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2015.5.2-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
-* Mon Jun  4 2015 Erik Johnson <erik@saltstack.com> - 2015.5.2-3
+* Thu Jun  4 2015 Erik Johnson <erik@saltstack.com> - 2015.5.2-3
 - Mark salt-ssh roster as a config file to prevent replacement
 
-* Mon Jun  4 2015 Erik Johnson <erik@saltstack.com> - 2015.5.2-2
+* Thu Jun  4 2015 Erik Johnson <erik@saltstack.com> - 2015.5.2-2
 - Update skipped tests
 
-* Mon Jun  4 2015 Erik Johnson <erik@saltstack.com> - 2015.5.2-1
+* Thu Jun  4 2015 Erik Johnson <erik@saltstack.com> - 2015.5.2-1
 - Update to bugfix release 2015.5.2
 
 * Mon Jun  1 2015 Erik Johnson <erik@saltstack.com> - 2015.5.1-2
