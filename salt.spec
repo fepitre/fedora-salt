@@ -455,7 +455,10 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
-* Mon Jun  4 2015 Erik Johnson <erik@saltstack.com> - 2015.5.3-2
+* Fri Jul 10 2015 Erik Johnson <erik@saltstack.com> - 2015.5.3-3
+- Patch init grain
+
+* Fri Jul 10 2015 Erik Johnson <erik@saltstack.com> - 2015.5.3-2
 - Update to bugfix release 2015.5.3, add bash completion
 
 * Fri Jun 19 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2015.5.2-4
