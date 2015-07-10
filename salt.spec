@@ -12,10 +12,10 @@
 %{!?pythonpath: %global pythonpath %(%{__python} -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
 
 %define _salttesting SaltTesting
-%define _salttesting_ver 2015.5.8
+%define _salttesting_ver 2015.7.10
 
 Name: salt
-Version: 2015.5.2
+Version: 2015.5.3
 Release: 4%{?dist}
 Summary: A parallel remote execution system
 
@@ -34,6 +34,7 @@ Source8: %{name}-minion.service
 Source9: %{name}-api.service
 Source10: README.fedora
 Source11: logrotate.salt
+Source12: salt.bash
 
 Patch0:  salt-%{version}-tests.patch
 
@@ -236,9 +237,14 @@ sed -i 's#/usr/bin/python#/usr/bin/python2.6#g' %{buildroot}%{_bindir}/salt*
 sed -i 's#/usr/bin/python#/usr/bin/python2.6#g' %{buildroot}%{_initrddir}/salt*
 %endif
 
+# Logrotate
 install -p %{SOURCE10} .
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d/
 install -p -m 0644 %{SOURCE11} %{buildroot}%{_sysconfdir}/logrotate.d/salt
+
+# Bash completion
+mkdir -p %{buildroot}%{_sysconfdir}/bash_completion.d/
+install -p -m 0644 %{SOURCE12} %{buildroot}%{_sysconfdir}/bash_completion.d/salt.bash
 
 %if ((0%{?rhel} >= 6 || 0%{?fedora} > 12) && 0%{?include_tests})
 %check
@@ -257,6 +263,7 @@ rm -rf %{buildroot}
 #%{python_sitelib}/%{name}-%{version}-py?.?.egg-info
 %{python_sitelib}/%{name}-*-py?.?.egg-info
 %{_sysconfdir}/logrotate.d/salt
+%{_sysconfdir}/bash_completion.d/salt.bash
 %{_var}/cache/salt
 %doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/README.fedora
 
