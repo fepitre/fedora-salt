@@ -15,7 +15,7 @@
 %define _salttesting_ver 2015.7.10
 
 Name: salt
-Version: 2015.5.8
+Version: 2015.5.9
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -36,7 +36,7 @@ Source10: README.fedora
 Source11: logrotate.salt
 Source12: salt.bash
 
-#Patch0:  salt-%{version}-tests.patch
+Patch0:  2015.5.9-dnf.patch
 
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -48,7 +48,12 @@ Requires: dmidecode
 
 Requires: pciutils
 Requires: which
+
+%if 0%{?fedora} > 21
+Requires: dnf-plugins-core
+%else
 Requires: yum-utils
+%endif
 
 %if 0%{?with_python26}
 
@@ -190,8 +195,8 @@ of an agent (salt-minion) service.
 %setup -c
 %setup -T -D -a 1
 
-#cd %{name}-%{version}
-#%patch0 -p1
+cd %{name}-%{version}
+%patch0 -p1
 
 %build
 
@@ -455,6 +460,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Thu Jan 21 2016 Erik Johnson <erik@saltstack.com> - 2015.5.9-1
+- Update to bugfix release 2015.5.9, patched with proper dnf support
+
 * Sun Dec 20 2015 Erik Johnson <erik@saltstack.com> - 2015.5.8-1
 - Update to bugfix release 2015.5.8
 
