@@ -10,7 +10,7 @@ index b385a7d..cfebeea 100644
 \ No newline at end of file
 +    :exclude-members: available_version, get_locked_packages
 diff --git a/salt/modules/yumpkg.py b/salt/modules/yumpkg.py
-index 25b26f0..5a15d4d 100644
+index 25b26f0..9b4092c 100644
 --- a/salt/modules/yumpkg.py
 +++ b/salt/modules/yumpkg.py
 @@ -1,6 +1,6 @@
@@ -406,14 +406,16 @@ index 25b26f0..5a15d4d 100644
  
      .. versionadded:: 2014.7.0
          Support for the ``disableexcludes`` option
-@@ -719,29 +881,33 @@ def check_db(*names, **kwargs):
+@@ -718,41 +880,44 @@ def check_db(*names, **kwargs):
+         salt '*' pkg.check_db <package1> <package2> <package3> fromrepo=epel-testing
          salt '*' pkg.check_db <package1> <package2> <package3> disableexcludes=main
      '''
-     normalize = kwargs.pop('normalize') if kwargs.get('normalize') else False
+-    normalize = kwargs.pop('normalize') if kwargs.get('normalize') else False
 -    repo_arg = _get_repo_options(**kwargs)
 -    exclude_arg = _get_excludes_option(**kwargs)
 -    repoquery_base = \
 -        '{0} {1} --all --quiet --whatprovides'.format(repo_arg, exclude_arg)
++    normalize = kwargs.pop('normalize', True)
 +    repo_arg = _get_repo_options(repoquery=True, **kwargs)
 +    exclude_arg = _get_excludes_option(repoquery=True, **kwargs)
 +
@@ -451,7 +453,22 @@ index 25b26f0..5a15d4d 100644
          __context__['pkg._avail'] = avail
  
      ret = {}
-@@ -806,13 +972,16 @@ def refresh_db(**kwargs):
+-    if names:
+-        repoquery_cmd = repoquery_base + ' {0}'.format(" ".join(names))
+-        provides = sorted(
+-            set(x.name for x in _repoquery_pkginfo(repoquery_cmd))
+-        )
+     for name in names:
+         ret.setdefault(name, {})['found'] = name in avail
+         if not ret[name]['found']:
++            repoquery_cmd = '{0} {1}'.format(repoquery_base, name)
++            provides = sorted(
++                set(x.name for x in _repoquery_pkginfo(repoquery_cmd))
++            )
+             if name in provides:
+                 # Package was not in avail but was found by the repoquery_cmd
+                 ret[name]['found'] = True
+@@ -806,13 +971,16 @@ def refresh_db(**kwargs):
      repo_arg = _get_repo_options(**kwargs)
      exclude_arg = _get_excludes_option(**kwargs)
      branch_arg = _get_branch_option(**kwargs)
@@ -470,7 +487,7 @@ index 25b26f0..5a15d4d 100644
          repo=repo_arg,
          exclude=exclude_arg,
          branch=branch_arg
-@@ -1137,8 +1306,10 @@ def install(name=None,
+@@ -1137,8 +1305,10 @@ def install(name=None,
              else:
                  downgrade.append(pkgstr)
  
@@ -482,7 +499,7 @@ index 25b26f0..5a15d4d 100644
              repo=repo_arg,
              exclude=exclude_arg,
              branch=branch_arg,
-@@ -1148,7 +1319,8 @@ def install(name=None,
+@@ -1148,7 +1318,8 @@ def install(name=None,
          __salt__['cmd.run'](cmd, output_loglevel='trace')
  
      if downgrade:
@@ -492,7 +509,7 @@ index 25b26f0..5a15d4d 100644
              repo=repo_arg,
              exclude=exclude_arg,
              branch=branch_arg,
-@@ -1158,7 +1330,8 @@ def install(name=None,
+@@ -1158,7 +1329,8 @@ def install(name=None,
          __salt__['cmd.run'](cmd, output_loglevel='trace')
  
      if to_reinstall:
@@ -502,7 +519,7 @@ index 25b26f0..5a15d4d 100644
              repo=repo_arg,
              exclude=exclude_arg,
              branch=branch_arg,
-@@ -1228,7 +1401,8 @@ def upgrade(refresh=True, skip_verify=False, **kwargs):
+@@ -1228,7 +1400,8 @@ def upgrade(refresh=True, skip_verify=False, **kwargs):
          refresh_db(**kwargs)
  
      old = list_pkgs()
@@ -512,8 +529,12 @@ index 25b26f0..5a15d4d 100644
          repo=repo_arg,
          exclude=exclude_arg,
          branch=branch_arg,
-@@ -1248,7 +1422,7 @@ def remove(name=None, pkgs=None, **kwargs):  # pylint: disable=W0613
-     Remove packages with ``yum -q -y remove``.
+@@ -1245,10 +1418,10 @@ def upgrade(refresh=True, skip_verify=False, **kwargs):
+ 
+ def remove(name=None, pkgs=None, **kwargs):  # pylint: disable=W0613
+     '''
+-    Remove packages with ``yum -q -y remove``.
++    Remove packages
  
      name
 -        The name of the package to be deleted.
@@ -521,7 +542,7 @@ index 25b26f0..5a15d4d 100644
  
  
      Multiple Package Options:
-@@ -1280,7 +1454,7 @@ def remove(name=None, pkgs=None, **kwargs):  # pylint: disable=W0613
+@@ -1280,7 +1453,7 @@ def remove(name=None, pkgs=None, **kwargs):  # pylint: disable=W0613
      if not targets:
          return {}
      quoted_targets = [_cmd_quote(target) for target in targets]
@@ -530,7 +551,7 @@ index 25b26f0..5a15d4d 100644
      __salt__['cmd.run'](cmd, output_loglevel='trace')
      __context__.pop('pkg.list_pkgs', None)
      new = list_pkgs()
-@@ -1296,7 +1470,7 @@ def purge(name=None, pkgs=None, **kwargs):  # pylint: disable=W0613
+@@ -1296,7 +1469,7 @@ def purge(name=None, pkgs=None, **kwargs):  # pylint: disable=W0613
      :mod:`pkg.remove <salt.modules.yumpkg.remove>`.
  
      name
@@ -539,7 +560,7 @@ index 25b26f0..5a15d4d 100644
  
  
      Multiple Package Options:
-@@ -1325,7 +1499,15 @@ def hold(name=None, pkgs=None, sources=None, **kwargs):  # pylint: disable=W0613
+@@ -1325,7 +1498,15 @@ def hold(name=None, pkgs=None, sources=None, **kwargs):  # pylint: disable=W0613
      '''
      .. versionadded:: 2014.7.0
  
@@ -556,7 +577,7 @@ index 25b26f0..5a15d4d 100644
  
      name
          The name of the package to be held.
-@@ -1345,13 +1527,8 @@ def hold(name=None, pkgs=None, sources=None, **kwargs):  # pylint: disable=W0613
+@@ -1345,13 +1526,8 @@ def hold(name=None, pkgs=None, sources=None, **kwargs):  # pylint: disable=W0613
          salt '*' pkg.hold <package name>
          salt '*' pkg.hold pkgs='["foo", "bar"]'
      '''
@@ -571,7 +592,7 @@ index 25b26f0..5a15d4d 100644
      if not name and not pkgs and not sources:
          raise SaltInvocationError(
              'One of name, pkgs, or sources must be specified.'
-@@ -1381,7 +1558,7 @@ def hold(name=None, pkgs=None, sources=None, **kwargs):  # pylint: disable=W0613
+@@ -1381,7 +1557,7 @@ def hold(name=None, pkgs=None, sources=None, **kwargs):  # pylint: disable=W0613
              )
          targets.append(name)
  
@@ -580,7 +601,7 @@ index 25b26f0..5a15d4d 100644
      ret = {}
      for target in targets:
          if isinstance(target, dict):
-@@ -1398,7 +1575,7 @@ def hold(name=None, pkgs=None, sources=None, **kwargs):  # pylint: disable=W0613
+@@ -1398,7 +1574,7 @@ def hold(name=None, pkgs=None, sources=None, **kwargs):  # pylint: disable=W0613
                  ret[target]['comment'] = ('Package {0} is set to be held.'
                                            .format(target))
              else:
@@ -589,7 +610,7 @@ index 25b26f0..5a15d4d 100644
                  out = __salt__['cmd.run_all'](cmd)
  
                  if out['retcode'] == 0:
-@@ -1421,10 +1598,18 @@ def unhold(name=None, pkgs=None, sources=None, **kwargs):  # pylint: disable=W06
+@@ -1421,10 +1597,18 @@ def unhold(name=None, pkgs=None, sources=None, **kwargs):  # pylint: disable=W06
      '''
      .. versionadded:: 2014.7.0
  
@@ -610,7 +631,7 @@ index 25b26f0..5a15d4d 100644
  
      Multiple Package Options:
  
-@@ -1441,13 +1626,8 @@ def unhold(name=None, pkgs=None, sources=None, **kwargs):  # pylint: disable=W06
+@@ -1441,13 +1625,8 @@ def unhold(name=None, pkgs=None, sources=None, **kwargs):  # pylint: disable=W06
          salt '*' pkg.unhold <package name>
          salt '*' pkg.unhold pkgs='["foo", "bar"]'
      '''
@@ -625,7 +646,7 @@ index 25b26f0..5a15d4d 100644
      if not name and not pkgs and not sources:
          raise SaltInvocationError(
              'One of name, pkgs, or sources must be specified.'
-@@ -1467,7 +1647,7 @@ def unhold(name=None, pkgs=None, sources=None, **kwargs):  # pylint: disable=W06
+@@ -1467,7 +1646,7 @@ def unhold(name=None, pkgs=None, sources=None, **kwargs):  # pylint: disable=W06
      else:
          targets.append(name)
  
@@ -634,16 +655,20 @@ index 25b26f0..5a15d4d 100644
      ret = {}
      for target in targets:
          if isinstance(target, dict):
-@@ -1487,7 +1667,7 @@ def unhold(name=None, pkgs=None, sources=None, **kwargs):  # pylint: disable=W06
+@@ -1487,9 +1666,9 @@ def unhold(name=None, pkgs=None, sources=None, **kwargs):  # pylint: disable=W06
                                            .format(target))
              else:
                  quoted_targets = [_cmd_quote(item) for item in search_locks]
 -                cmd = 'yum -q versionlock delete {0}'.format(
-+                cmd = _yum() + ' -q versionlock delete {0}'.format(
-                         ' '.join(quoted_targets)
-                         )
+-                        ' '.join(quoted_targets)
+-                        )
++                cmd = _yum() + ' versionlock delete {0}'.format(
++                    ' '.join(quoted_targets)
++                )
                  out = __salt__['cmd.run_all'](cmd)
-@@ -1508,45 +1688,71 @@ def unhold(name=None, pkgs=None, sources=None, **kwargs):  # pylint: disable=W06
+ 
+                 if out['retcode'] == 0:
+@@ -1508,45 +1687,71 @@ def unhold(name=None, pkgs=None, sources=None, **kwargs):  # pylint: disable=W06
      return ret
  
  
@@ -736,7 +761,7 @@ index 25b26f0..5a15d4d 100644
  
  
  def verify(*names, **kwargs):
-@@ -1582,42 +1788,62 @@ def group_list():
+@@ -1582,42 +1787,62 @@ def group_list():
  
          salt '*' pkg.group_list
      '''
@@ -821,7 +846,7 @@ index 25b26f0..5a15d4d 100644
  
      Lists packages belonging to a certain group
  
-@@ -1627,44 +1853,67 @@ def group_info(name):
+@@ -1627,44 +1852,67 @@ def group_info(name):
  
          salt '*' pkg.group_info 'Perl Support'
      '''
@@ -923,7 +948,7 @@ index 25b26f0..5a15d4d 100644
  
      return ret
  
-@@ -1672,6 +1921,10 @@ def group_info(name):
+@@ -1672,6 +1920,10 @@ def group_info(name):
  def group_diff(name):
      '''
      .. versionadded:: 2014.1.0
@@ -934,7 +959,7 @@ index 25b26f0..5a15d4d 100644
  
      Lists packages belonging to a certain group, and which are installed
  
-@@ -1681,21 +1934,19 @@ def group_diff(name):
+@@ -1681,21 +1933,19 @@ def group_diff(name):
  
          salt '*' pkg.group_diff 'Perl Support'
      '''
@@ -966,12 +991,11 @@ index 25b26f0..5a15d4d 100644
      return ret
  
  
-@@ -1732,7 +1983,9 @@ def list_repos(basedir=None):
+@@ -1732,7 +1982,8 @@ def list_repos(basedir=None):
  
  def get_repo(repo, basedir=None, **kwargs):  # pylint: disable=W0613
      '''
 -    Display a repo from <basedir> (default basedir: all dirs in `reposdir` yum option).
-+
 +    Display a repo from <basedir> (default basedir: all dirs in ``reposdir``
 +    yum option).
  
