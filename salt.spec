@@ -16,7 +16,7 @@
 
 Name: salt
 Version: 2015.5.9
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -156,7 +156,7 @@ from the master, runs jobs, and returns results back to the master.
 %package syndic
 Summary: Master-of-master component for Salt, a parallel remote execution system
 Group:   System Environment/Daemons
-Requires: %{name} = %{version}-%{release}
+Requires: %{name}-master = %{version}-%{release}
 
 %description syndic
 The Salt syndic is a master daemon which can receive instruction from a
@@ -460,6 +460,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Thu Feb  4 2016 Erik Johnson <erik@saltstack.com> - 2015.5.9-3
+- Corrected Requires for salt-syndic package
+
 * Sun Jan 24 2016 Erik Johnson <erik@saltstack.com> - 2015.5.9-2
 - Updated dnf patch
 
