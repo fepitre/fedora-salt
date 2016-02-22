@@ -16,7 +16,7 @@
 
 Name: salt
 Version: 2015.5.9
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -460,6 +460,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Sun Feb 21 2016 Erik Johnson <erik@saltstack.com> - 2015.5.9-4
+- Updated dnf patch
+
 * Thu Feb  4 2016 Erik Johnson <erik@saltstack.com> - 2015.5.9-3
 - Corrected Requires for salt-syndic package
 
