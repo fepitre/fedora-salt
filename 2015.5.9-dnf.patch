@@ -2086,6 +2086,16 @@ index 0000000..f824adb
 +        if pos < match.start() or sep is not None:
 +            yield orig[pos:match.start()]
 +        pos = match.end()
+diff --git a/salt/utils/pkg/__init__.py b/salt/utils/pkg/__init__.py
+new file mode 100644
+index 0000000..e316343
+--- /dev/null
++++ b/salt/utils/pkg/__init__.py
+@@ -0,0 +1,4 @@
++# -*- coding: utf-8 -*-
++'''
++Helper modules used by lowpkg modules
++'''
 diff --git a/salt/utils/pkg/rpm.py b/salt/utils/pkg/rpm.py
 new file mode 100644
 index 0000000..9c01d5b
