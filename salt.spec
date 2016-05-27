@@ -15,8 +15,8 @@
 %define _salttesting_ver 2015.7.10
 
 Name: salt
-Version: 2015.5.9
-Release: 5%{?dist}
+Version: 2015.5.10
+Release: 1%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -36,7 +36,7 @@ Source10: README.fedora
 Source11: logrotate.salt
 Source12: salt.bash
 
-Patch0:  2015.5.9-dnf.patch
+Patch0:  2015.5.10-dnf.patch
 
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -460,6 +460,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Fri May 27 2016 Erik Johnson <erik@saltstack.com> - 2015.5.10-1
+- Update to bugfix release 2015.5.10
+
 * Tue Mar  1 2016 Erik Johnson <erik@saltstack.com> - 2015.5.9-5
 - Updated dnf patch
 
