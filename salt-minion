@@ -69,6 +69,10 @@ start() {
             echo -n "already running"
         else
             daemon --check $SERVICE $SALTMINION -d $MINION_ARGS
+            RETVAL=$?
+            [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$SERVICE
+            echo
+            return $RETVAL
         fi
     fi
     RETVAL=$?
@@ -94,6 +98,17 @@ stop() {
     else
         killproc $PROCESS
         RETVAL=$?
+        [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$SERVICE
+        # tidy up any rogue processes:
+        PROCS=`ps -ef | grep "$SALTMINION" | grep -v grep | awk '{print $2}'`
+        if [ -n "$PROCS" ]; then
+            kill $PROCS &> /dev/null
+            sleep 1
+            PROCS=`ps -ef | grep "$SALTMINION" | grep -v grep | awk '{print $2}'`
+            if [ -n "$PROCS" ]; then
+                kill -9 $PROCS &> /dev/null
+            fi
+        fi
     fi
     echo
 }
@@ -131,7 +146,7 @@ case "$1" in
         ;;
     reload)
         echo "can't reload configuration, you have to restart it"
-        RETVAL=$?
+        RETVAL=1
         ;;
     *)
         echo $"Usage: $0 {start|stop|status|restart|condrestart|reload}"
