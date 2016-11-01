@@ -62,3 +62,9 @@
 /salt-2015.5.10.tar.gz
 /salt-2016.3.3.tar.gz
 /SaltTesting-2016.9.7.tar.gz
+/salt-2016.3.4.tar.gz
+/SaltTesting-2016.10.26.tar.gz
+/salt-master.service
+/salt-api.service
+/salt-minion.service
+/salt-syndic.service
