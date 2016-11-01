@@ -12,11 +12,11 @@
 %{!?pythonpath: %global pythonpath %(%{__python} -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
 
 %define _salttesting SaltTesting
-%define _salttesting_ver 2016.9.7
+%define _salttesting_ver 2016.10.26
 
 Name: salt
-Version: 2016.3.3
-Release: 3%{?dist}
+Version: 2016.3.4
+Release: 1%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -504,6 +504,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Mon Oct 31 2016 SaltStack Packaging Team <packaging@saltstack.com> - 2016.3.4-1
+- Update to feature release 2016.3.4
+
 * Mon Sep 12 2016 SaltStack Packaging Team <packaging@saltstack.com> - 2016.3.3-3
 - Adjust spec file for Fedora 24 support
 
