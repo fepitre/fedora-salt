@@ -1,6 +1,2 @@
-9a110f379d8af6be9b0a692430cc17a6  salt-2016.3.4.tar.gz
+eced07a652cc6a31870fc098d5325a9c  salt-2016.11.0.tar.gz
 671fb2020ef3ebb8281ec536d0fcb9b1  SaltTesting-2016.10.26.tar.gz
-b875ab6b11ecc9281e7cceb0627fbf51  salt-master.service
-6f0c2a4da5fd2fb6e3d5c18b697bdc50  salt-api.service
-97d7fc2203ddb2367cd0f4885b8fac3f  salt-minion.service
-49951390029176761342092597bafb4b  salt-syndic.service

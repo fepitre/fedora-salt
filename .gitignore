@@ -68,3 +68,4 @@
 /salt-api.service
 /salt-minion.service
 /salt-syndic.service
+/salt-2016.11.0.tar.gz
