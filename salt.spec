@@ -15,7 +15,7 @@
 %define _salttesting_ver 2016.10.26
 
 Name: salt
-Version: 2016.11.0
+Version: 2016.3.4
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -35,15 +35,6 @@ Source9: %{name}-api.service
 Source10: README.fedora
 Source11: %{name}-common.logrotate
 Source12: salt.bash
-Source13: salt.fish
-Source14: salt_common.fish
-Source15: salt-call.fish
-Source16: salt-cp.fish
-Source17: salt-key.fish
-Source18: salt-master.fish
-Source19: salt-minion.fish
-Source20: salt-run.fish
-Source21: salt-syndic.fish
 
 ## Patch0:  salt-%%{version}-tests.patch
 
@@ -176,7 +167,7 @@ infrastructure.
 
 %package api
 Summary: REST API for Salt, a parallel remote execution system
-Group:   System administration tools
+Group:   Applications/System
 Requires: %{name}-master = %{version}-%{release}
 %if 0%{?with_python26}
 Requires: python26-cherrypy
@@ -190,7 +181,7 @@ salt-api provides a REST interface to the Salt master.
 
 %package cloud
 Summary: Cloud provisioner for Salt, a parallel remote execution system
-Group:   System administration tools
+Group:   Applications/System
 Requires: %{name}-master = %{version}-%{release}
 %if 0%{?with_python26}
 Requires: python26-libcloud
@@ -204,7 +195,7 @@ adds them to the master's collection of controllable minions.
 
 %package ssh
 Summary: Agentless SSH-based version of Salt, a parallel remote execution system
-Group:   System administration tools
+Group:   Applications/System
 Requires: %{name} = %{version}-%{release}
 
 %description ssh
@@ -212,8 +203,8 @@ The salt-ssh tool can run remote execution functions and states without the use
 of an agent (salt-minion) service.
 
 %prep
-%setup -c
-%setup -T -D -a 1
+%setup -q -c
+%setup -q -T -D -a 1
 
 cd %{name}-%{version}
 ## %%patch0 -p1
@@ -242,7 +233,6 @@ install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.deploy.d
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.maps.d
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.profiles.d
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.providers.d
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/proxy.d
 
 # Add the config files
 install -p -m 0640 conf/minion %{buildroot}%{_sysconfdir}/salt/minion
@@ -283,18 +273,6 @@ install -p -m 0644 %{SOURCE11} %{buildroot}%{_sysconfdir}/logrotate.d/salt
 mkdir -p %{buildroot}%{_sysconfdir}/bash_completion.d/
 install -p -m 0644 %{SOURCE12} %{buildroot}%{_sysconfdir}/bash_completion.d/salt.bash
 
-# Fish completion (TBD remove -v)
-mkdir -p %{buildroot}%{_datadir}/fish/vendor_functions.d/
-install -p -m 0644  %{SOURCE13} %{buildroot}%{_datadir}/fish/vendor_functions.d/salt.fish
-install -p -m 0644  %{SOURCE13} %{buildroot}%{_datadir}/fish/vendor_functions.d/salt_common.fish
-install -p -m 0644  %{SOURCE13} %{buildroot}%{_datadir}/fish/vendor_functions.d/salt-call.fish
-install -p -m 0644  %{SOURCE13} %{buildroot}%{_datadir}/fish/vendor_functions.d/salt-cp.fish
-install -p -m 0644  %{SOURCE13} %{buildroot}%{_datadir}/fish/vendor_functions.d/salt-key.fish
-install -p -m 0644  %{SOURCE13} %{buildroot}%{_datadir}/fish/vendor_functions.d/salt-master.fish
-install -p -m 0644  %{SOURCE13} %{buildroot}%{_datadir}/fish/vendor_functions.d/salt-minion.fish
-install -p -m 0644  %{SOURCE13} %{buildroot}%{_datadir}/fish/vendor_functions.d/salt-run.fish
-install -p -m 0644  %{SOURCE13} %{buildroot}%{_datadir}/fish/vendor_functions.d/salt-syndic.fish
-
 %if ((0%{?rhel} >= 6 || 0%{?fedora} > 12) && 0%{?include_tests})
 %check
 cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
@@ -320,12 +298,10 @@ rm -rf %{buildroot}
 %doc %{_mandir}/man1/spm.1.*
 %config(noreplace) %{_sysconfdir}/salt/
 %config(noreplace) %{_sysconfdir}/salt/pki
-%config(noreplace) %{_datadir}/fish/vendor_functions.d/salt*.fish
 
 %files master
 %defattr(-,root,root)
 %doc %{_mandir}/man7/salt.7.*
-%doc %{_mandir}/man1/salt.1.*
 %doc %{_mandir}/man1/salt-cp.1.*
 %doc %{_mandir}/man1/salt-key.1.*
 %doc %{_mandir}/man1/salt-master.1.*
@@ -364,7 +340,6 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/salt/proxy
 %config(noreplace) %{_sysconfdir}/salt/minion.d
 %config(noreplace) %{_sysconfdir}/salt/pki/minion
-%config(noreplace) %{_sysconfdir}/salt/proxy.d
 %config(noreplace) %{_var}/log/salt/minion
 
 %files syndic
@@ -529,14 +504,11 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
-* Tue Nov 22 2016 SaltStack Packaging Team <packaging@saltstack.com> - 2016.11.0-1
-- Update to feature release 2016.11.0
+* Mon Oct 31 2016 SaltStack Packaging Team <packaging@saltstack.com> - 2016.3.4-1
+- Update to feature release 2016.3.4
 
-* Wed Nov  2 2016 SaltStack Packaging Team <packaging@saltstack.com> - 2016.11.0-0.rc2
-- Update to feature release 2016.11.0 Release Candidate 2
-
-* Fri Oct  7 2016 SaltStack Packaging Team <packaging@saltstack.com> - 2016.11.0-0.rc1
-- Update to feature release 2016.11.0 Release Candidate 1
+* Mon Sep 12 2016 SaltStack Packaging Team <packaging@saltstack.com> - 2016.3.3-3
+- Adjust spec file for Fedora 24 support
 
 * Tue Aug 30 2016 SaltStack Packaging Team <packaging@saltstack.com> - 2016.3.3-2
 - Fix systemd update of existing installation
