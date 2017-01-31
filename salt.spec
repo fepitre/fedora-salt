@@ -1,19 +1,3 @@
-%if ( "0%{?dist}" == "0.amzn1" )
-%global with_explicit_python27 1
-%global pybasever 2.7
-%global __python_ver 27
-%global __python %{_bindir}/python%{?pybasever}
-%global __python2 %{_bindir}/python%{?pybasever}
-
-%global python2_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
-%global python2_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")
-
-%{!?pythonpath: %global pythonpath %(%{__python} -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
-
-%global __inst_layout --install-layout=unix
-
-%else
-
 %if ! (0%{?rhel} >= 6 || 0%{?fedora} > 12)
 %global with_python26 1
 %define pybasever 2.6
@@ -21,21 +5,17 @@
 %define __python %{_bindir}/python%{?pybasever}
 %endif
 
-%{!?python2_sitelib: %global python2_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%{!?python2_sitearch: %global python2_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
-%{!?pythonpath: %global pythonpath %(%{__python} -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
-
-%endif
-
 %global include_tests 0
 
-%define fish_dir %{_datadir}/fish/vendor_functions.d
+%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
+%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
+%{!?pythonpath: %global pythonpath %(%{__python} -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
 
 %define _salttesting SaltTesting
 %define _salttesting_ver 2016.10.26
 
 Name: salt
-Version: 2016.11.1
+Version: 2016.3.5
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -55,15 +35,6 @@ Source9: %{name}-api.service
 Source10: README.fedora
 Source11: %{name}-common.logrotate
 Source12: salt.bash
-Source13: salt.fish
-Source14: salt_common.fish
-Source15: salt-call.fish
-Source16: salt-cp.fish
-Source17: salt-key.fish
-Source18: salt-master.fish
-Source19: salt-minion.fish
-Source20: salt-run.fish
-Source21: salt-syndic.fish
 
 ## Patch0:  salt-%%{version}-tests.patch
 
@@ -119,21 +90,17 @@ BuildRequires: python-argparse
 
 %endif
 
-BuildRequires: python%{?__python_ver}-devel
-Requires: python%{?__python_ver}-crypto >= 2.6.1
-Requires: python%{?__python_ver}-jinja2
-Requires: python%{?__python_ver}-msgpack > 0.3
-%if ( "0%{?dist}" == "0.amzn1" )
-Requires: python27-PyYAML
-%else
+BuildRequires: python-devel
+Requires: python-crypto >= 2.6.1
+Requires: python-jinja2
+Requires: python-msgpack > 0.3
 Requires: PyYAML
-%endif
-Requires: python%{?__python_ver}-requests >= 1.0.0
-Requires: python%{?__python_ver}-zmq
-Requires: python%{?__python_ver}-markupsafe
-Requires: python%{?__python_ver}-tornado >= 4.2.1
-Requires: python%{?__python_ver}-futures >= 2.0
-Requires: python%{?__python_ver}-six
+Requires: python-requests >= 1.0.0
+Requires: python-zmq
+Requires: python-markupsafe
+Requires: python-tornado >= 4.2.1
+Requires: python-futures >= 2.0
+Requires: python-six
 
 
 %endif
@@ -205,7 +172,7 @@ Requires: %{name}-master = %{version}-%{release}
 %if 0%{?with_python26}
 Requires: python26-cherrypy
 %else
-Requires: python%{?__python_ver}-cherrypy
+Requires: python-cherrypy
 %endif
 
 
@@ -219,7 +186,7 @@ Requires: %{name}-master = %{version}-%{release}
 %if 0%{?with_python26}
 Requires: python26-libcloud
 %else
-Requires: python%{?__python_ver}-libcloud
+Requires: python-libcloud
 %endif
 
 %description cloud
@@ -248,7 +215,7 @@ cd %{name}-%{version}
 %install
 rm -rf %{buildroot}
 cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
-%{__python} setup.py install -O1 %{?__inst_layout } --root %{buildroot}
+%{__python} setup.py install -O1 --root %{buildroot}
 
 # Add some directories
 install -d -m 0755 %{buildroot}%{_var}/log/salt
@@ -266,7 +233,6 @@ install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.deploy.d
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.maps.d
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.profiles.d
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.providers.d
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/proxy.d
 
 # Add the config files
 install -p -m 0640 conf/minion %{buildroot}%{_sysconfdir}/salt/minion
@@ -307,18 +273,6 @@ install -p -m 0644 %{SOURCE11} %{buildroot}%{_sysconfdir}/logrotate.d/salt
 mkdir -p %{buildroot}%{_sysconfdir}/bash_completion.d/
 install -p -m 0644 %{SOURCE12} %{buildroot}%{_sysconfdir}/bash_completion.d/salt.bash
 
-# Fish completion (TBD remove -v)
-mkdir -p %{buildroot}%{fish_dir}
-install -p -m 0644  %{SOURCE13} %{buildroot}%{fish_dir}/salt.fish
-install -p -m 0644  %{SOURCE14} %{buildroot}%{fish_dir}/salt_common.fish
-install -p -m 0644  %{SOURCE15} %{buildroot}%{fish_dir}/salt-call.fish
-install -p -m 0644  %{SOURCE16} %{buildroot}%{fish_dir}/salt-cp.fish
-install -p -m 0644  %{SOURCE17} %{buildroot}%{fish_dir}/salt-key.fish
-install -p -m 0644  %{SOURCE18} %{buildroot}%{fish_dir}/salt-master.fish
-install -p -m 0644  %{SOURCE19} %{buildroot}%{fish_dir}/salt-minion.fish
-install -p -m 0644  %{SOURCE20} %{buildroot}%{fish_dir}/salt-run.fish
-install -p -m 0644  %{SOURCE21} %{buildroot}%{fish_dir}/salt-syndic.fish
-
 %if ((0%{?rhel} >= 6 || 0%{?fedora} > 12) && 0%{?include_tests})
 %check
 cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
@@ -332,35 +286,27 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
-%{python2_sitelib}/%{name}/*
-#%%{python2_sitelib}/%%{name}-%%{version}-py?.?.egg-info
-
-%if ( "0%{?dist}" == "0.amzn1" )
-%{python2_sitelib}/%{name}-%{version}.egg-info
-%else
-%{python2_sitelib}/%{name}-*-py?.?.egg-info
-%endif
-
+%{python_sitelib}/%{name}/*
+#%%{python_sitelib}/%%{name}-%%{version}-py?.?.egg-info
+%{python_sitelib}/%{name}-*-py?.?.egg-info
 %{_sysconfdir}/logrotate.d/salt
 %{_sysconfdir}/bash_completion.d/salt.bash
 %{_var}/cache/salt
 %{_var}/log/salt
 %doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/README.fedora
 %{_bindir}/spm
-%doc %{_mandir}/man1/spm.1*
+%doc %{_mandir}/man1/spm.1.*
 %config(noreplace) %{_sysconfdir}/salt/
 %config(noreplace) %{_sysconfdir}/salt/pki
-%config(noreplace) %{fish_dir}/salt*.fish
 
 %files master
 %defattr(-,root,root)
-%doc %{_mandir}/man7/salt.7*
-%doc %{_mandir}/man1/salt.1*
-%doc %{_mandir}/man1/salt-cp.1*
-%doc %{_mandir}/man1/salt-key.1*
-%doc %{_mandir}/man1/salt-master.1*
-%doc %{_mandir}/man1/salt-run.1*
-%doc %{_mandir}/man1/salt-unity.1*
+%doc %{_mandir}/man7/salt.7.*
+%doc %{_mandir}/man1/salt-cp.1.*
+%doc %{_mandir}/man1/salt-key.1.*
+%doc %{_mandir}/man1/salt-master.1.*
+%doc %{_mandir}/man1/salt-run.1.*
+%doc %{_mandir}/man1/salt-unity.1.*
 %{_bindir}/salt
 %{_bindir}/salt-cp
 %{_bindir}/salt-key
@@ -379,9 +325,9 @@ rm -rf %{buildroot}
 
 %files minion
 %defattr(-,root,root)
-%doc %{_mandir}/man1/salt-call.1*
-%doc %{_mandir}/man1/salt-minion.1*
-%doc %{_mandir}/man1/salt-proxy.1*
+%doc %{_mandir}/man1/salt-call.1.*
+%doc %{_mandir}/man1/salt-minion.1.*
+%doc %{_mandir}/man1/salt-proxy.1.*
 %{_bindir}/salt-minion
 %{_bindir}/salt-call
 %{_bindir}/salt-proxy
@@ -397,7 +343,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_var}/log/salt/minion
 
 %files syndic
-%doc %{_mandir}/man1/salt-syndic.1*
+%doc %{_mandir}/man1/salt-syndic.1.*
 %{_bindir}/salt-syndic
 %if ! (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
 %attr(0755, root, root) %{_initrddir}/salt-syndic
@@ -407,7 +353,7 @@ rm -rf %{buildroot}
 
 %files api
 %defattr(-,root,root)
-%doc %{_mandir}/man1/salt-api.1*
+%doc %{_mandir}/man1/salt-api.1.*
 %{_bindir}/salt-api
 %if ! (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
 %attr(0755, root, root) %{_initrddir}/salt-api
@@ -416,7 +362,7 @@ rm -rf %{buildroot}
 %endif
 
 %files cloud
-%doc %{_mandir}/man1/salt-cloud.1*
+%doc %{_mandir}/man1/salt-cloud.1.*
 %{_bindir}/salt-cloud
 %{_sysconfdir}/salt/cloud.conf.d
 %{_sysconfdir}/salt/cloud.deploy.d
@@ -426,7 +372,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/salt/cloud
 
 %files ssh
-%doc %{_mandir}/man1/salt-ssh.1*
+%doc %{_mandir}/man1/salt-ssh.1.*
 %{_bindir}/salt-ssh
 %config(noreplace) %{_sysconfdir}/salt/roster
 
@@ -558,23 +504,11 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
-* Tue Dec 13 2016 SaltStack Packaging Team <packaging@saltstack.com> - 2016.11.1-1
-- Update to feature release 2016.11.1
+* Tue Jan 17 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2016.3.5-1
+- Update to feature release 2016.3.5
 
-* Wed Nov 30 2016 SaltStack Packaging Team <packaging@saltstack.com> - 2016.11.0-2
-- Adjust for single spec for Redhat family and fish-completions
-
-* Tue Nov 22 2016 SaltStack Packaging Team <packaging@saltstack.com> - 2016.11.0-1
-- Update to feature release 2016.11.0
-
-* Wed Nov  2 2016 SaltStack Packaging Team <packaging@saltstack.com> - 2016.11.0-0.rc2
-- Update to feature release 2016.11.0 Release Candidate 2
-
-* Wed Oct 26 2016 SaltStack Packaging Team <packaging@saltstack.com> - 2016.11.0-0.rc1
-- Update to feature release 2016.11.0 Release Candidate 1
-
-* Fri Oct 14 2016 SaltStack Packaging Team <packaging@saltstack.com> - 2016.3.3-4
-- Ported to build on Amazon Linux 2016.09 natively
+* Mon Oct 31 2016 SaltStack Packaging Team <packaging@saltstack.com> - 2016.3.4-1
+- Update to feature release 2016.3.4
 
 * Mon Sep 12 2016 SaltStack Packaging Team <packaging@saltstack.com> - 2016.3.3-3
 - Adjust spec file for Fedora 24 support
