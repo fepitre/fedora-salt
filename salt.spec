@@ -35,7 +35,7 @@
 %define _salttesting_ver 2016.10.26
 
 Name: salt
-Version: 2016.11.2
+Version: 2016.11.3
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -375,7 +375,6 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/salt/master
 %config(noreplace) %{_sysconfdir}/salt/master.d
 %config(noreplace) %{_sysconfdir}/salt/pki/master
-%config(noreplace) %{_var}/log/salt/master
 
 %files minion
 %defattr(-,root,root)
@@ -394,7 +393,6 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/salt/proxy
 %config(noreplace) %{_sysconfdir}/salt/minion.d
 %config(noreplace) %{_sysconfdir}/salt/pki/minion
-%config(noreplace) %{_var}/log/salt/minion
 
 %files syndic
 %doc %{_mandir}/man1/salt-syndic.1*
@@ -558,8 +556,8 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
-* Tue Jan 17 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2016.11.2-1
-- Update to feature release 2016.11.2
+* Wed Feb 22 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2016.11.3-1
+- Update to feature release 2016.11.3
 
 * Tue Dec 13 2016 SaltStack Packaging Team <packaging@saltstack.com> - 2016.11.1-1
 - Update to feature release 2016.11.1
