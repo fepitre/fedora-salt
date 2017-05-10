@@ -138,7 +138,7 @@ Requires: python27-PyYAML
 Requires: python%{?__python_ver}
 Requires: python%{?__python_ver}-crypto >= 2.6.1
 %else
-%if (0%{?rhel} >= 6 && %{__isa_bits} == 64)
+%if (0%{?rhel} >= 6 && 0%{__isa_bits} == 64)
 Requires: python2-pycryptodomex >= 3.4.3
 %else
 Requires: python-crypto >= 2.6.1
