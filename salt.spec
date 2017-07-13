@@ -1,6 +1,3 @@
-
-%global __python_ver %{nil}
-
 %if ( "0%{?dist}" == "0.amzn1" )
 %global with_explicit_python27 1
 %global pybasever 2.7
@@ -17,16 +14,23 @@
 
 %else
 
-%if ! (0%{?rhel} >= 6 || 0%{?fedora} > 12)
-%global with_python26 1
-%define pybasever 2.6
-%define __python_ver 26
-%define __python %{_bindir}/python%{?pybasever}
-%endif
-
 %{!?python2_sitelib: %global python2_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 %{!?python2_sitearch: %global python2_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 %{!?pythonpath: %global pythonpath %(%{__python} -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
+
+
+%if 0%{?rhel} == 6
+%global with_python3 0
+
+%global with_explicit_python27 1
+%global pybasever 2.7
+%global __python_ver 27
+%global __python %{_bindir}/python%{?pybasever}
+%global __python2 %{_bindir}/python%{?pybasever}
+%global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
+%global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")
+%global __os_install_post %{__python27_os_install_post}
+%endif
 
 %endif
 
@@ -37,11 +41,8 @@
 
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
-%define _salttesting SaltTesting
-%define _salttesting_ver 2016.10.26
-
 Name: salt
-Version: 2016.11.6
+Version: 2017.7.0
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -49,7 +50,7 @@ Group:   System Environment/Daemons
 License: ASL 2.0
 URL:     http://saltstack.org/
 Source0: https://pypi.io/packages/source/s/%{name}/%{name}-%{version}.tar.gz
-Source1: https://pypi.io/packages/source/S/%{_salttesting}/%{_salttesting}-%{_salttesting_ver}.tar.gz
+Source1: %{name}-proxy@.service
 Source2: %{name}-master
 Source3: %{name}-syndic
 Source4: %{name}-minion
@@ -70,10 +71,8 @@ Source18: salt-master.fish
 Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
-Source22: %{name}-proxy@.service
 
 ## Patch0:  salt-%%{version}-tests.patch
-## Patch0:  salt-%{version}-fix-nameserver.patch
 
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -87,58 +86,57 @@ Requires: pciutils
 Requires: which
 Requires: yum-utils
 
-%if 0%{?with_python26}
-
-BuildRequires: python26-devel
-Requires: python26-crypto >= 2.6.1
-Requires: python26-jinja2
-Requires: python26-msgpack > 0.3
-Requires: python26-PyYAML
-Requires: python26-requests >= 1.0.0
-Requires: python26-tornado >= 4.2.1
-Requires: python26-zmq
-Requires: python26-six
-
-%else
 
 %if ((0%{?rhel} >= 6 || 0%{?fedora} > 12) && 0%{?include_tests})
-BuildRequires: python-tornado >= 4.2.1
-BuildRequires: python-futures >= 2.0
-BuildRequires: python-crypto >= 2.6.1
-BuildRequires: python-jinja2
-BuildRequires: python-msgpack > 0.3
-BuildRequires: python-pip
-BuildRequires: python-zmq
+BuildRequires: python%{?__python_ver}-tornado >= 4.2.1
+BuildRequires: python%{?__python_ver}-futures >= 2.0
+BuildRequires: python%{?__python_ver}-crypto >= 2.6.1
+BuildRequires: python%{?__python_ver}-jinja2
+BuildRequires: python%{?__python_ver}-msgpack > 0.3
+BuildRequires: python%{?__python_ver}-pip
+BuildRequires: python%{?__python_ver}-zmq
+
+%if 0%{?with_explicit_python27}
+BuildRequires: PyYAML%{?__python_ver}
+%else
 BuildRequires: PyYAML
-BuildRequires: python-requests
-BuildRequires: python-unittest2
+%endif
+
+BuildRequires: python%{?__python_ver}-requests
+BuildRequires: python%{?__python_ver}-unittest2
 # this BR causes windows tests to happen
 # clearly, that's not desired
 # https://github.com/saltstack/salt/issues/3749
-BuildRequires: python-mock
+BuildRequires: python%{?__python_ver}-mock
 BuildRequires: git
-BuildRequires: python-libcloud
-BuildRequires: python-six
+BuildRequires: python%{?__python_ver}-libcloud
+BuildRequires: python%{?__python_ver}-six
 
 %if ((0%{?rhel} == 6) && 0%{?include_tests})
 # argparse now a salt-testing requirement
 BuildRequires: python-argparse
 %endif
 
-%endif
+%endif  ##  ((0%{?rhel} >= 6 || 0%{?fedora} > 12) && 0%{?include_tests})
 
 BuildRequires: python%{?__python_ver}-devel
 
+
 Requires: python%{?__python_ver}-jinja2
 Requires: python%{?__python_ver}-msgpack > 0.3
+Requires: python%{?__python_ver}-crypto >= 2.6.1
+
 %if ( "0%{?dist}" == "0.amzn1" )
 Requires: python27-PyYAML
 Requires: python%{?__python_ver}
 %else
+%if 0%{?with_explicit_python27}
+Requires: python%{?__python_ver}  >= 2.7.9-1
+Requires: PyYAML%{?__python_ver}
+%else
 Requires: PyYAML
 %endif
 
-Requires: python%{?__python_ver}-crypto >= 2.6.1
 %endif
 
 Requires: python%{?__python_ver}-requests >= 1.0.0
@@ -147,6 +145,7 @@ Requires: python%{?__python_ver}-markupsafe
 Requires: python%{?__python_ver}-tornado >= 4.2.1
 Requires: python%{?__python_ver}-futures >= 2.0
 Requires: python%{?__python_ver}-six
+Requires: python%{?__python_ver}-psutil
 
 
 %if ! (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
@@ -213,11 +212,7 @@ infrastructure.
 Summary: REST API for Salt, a parallel remote execution system
 Group:   Applications/System
 Requires: %{name}-master = %{version}-%{release}
-%if 0%{?with_python26}
-Requires: python26-cherrypy
-%else
 Requires: python%{?__python_ver}-cherrypy
-%endif
 
 
 %description api
@@ -227,11 +222,7 @@ salt-api provides a REST interface to the Salt master.
 Summary: Cloud provisioner for Salt, a parallel remote execution system
 Group:   Applications/System
 Requires: %{name}-master = %{version}-%{release}
-%if 0%{?with_python26}
-Requires: python26-libcloud
-%else
 Requires: python%{?__python_ver}-libcloud
-%endif
 
 %description cloud
 The salt-cloud tool provisions new cloud VMs, installs salt-minion on them, and
@@ -247,11 +238,12 @@ The salt-ssh tool can run remote execution functions and states without the use
 of an agent (salt-minion) service.
 
 %prep
-%setup -q -c
-%setup -q -T -D -a 1
+## %setup -q -c
+## %setup -q -T -D -a 1
+%setup -c
 
 cd %{name}-%{version}
-## %patch0 -p1
+## %%patch0 -p1
 
 %build
 
@@ -299,16 +291,16 @@ install -p -m 0644 %{SOURCE6} %{buildroot}%{_unitdir}/
 install -p -m 0644 %{SOURCE7} %{buildroot}%{_unitdir}/
 install -p -m 0644 %{SOURCE8} %{buildroot}%{_unitdir}/
 install -p -m 0644 %{SOURCE9} %{buildroot}%{_unitdir}/
-install -p -m 0644 %{SOURCE22} %{buildroot}%{_unitdir}/
+install -p -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/
 %endif
 
-# Force python2.6 on EPEL6
-# https://github.com/saltstack/salt/issues/22003
-%if 0%{?rhel} == 6
-sed -i 's#/usr/bin/python#/usr/bin/python2.6#g' %{buildroot}%{_bindir}/spm
-sed -i 's#/usr/bin/python#/usr/bin/python2.6#g' %{buildroot}%{_bindir}/salt*
-sed -i 's#/usr/bin/python#/usr/bin/python2.6#g' %{buildroot}%{_initrddir}/salt*
-%endif
+## # Force python2.7 on EPEL6
+## # https://github.com/saltstack/salt/issues/22003
+## %if 0%{?rhel} == 6
+## sed -i 's#/usr/bin/python#/usr/bin/python2.7#g' %{buildroot}%{_bindir}/spm
+## sed -i 's#/usr/bin/python#/usr/bin/python2.7#g' %{buildroot}%{_bindir}/salt*
+## sed -i 's#/usr/bin/python#/usr/bin/python2.7#g' %{buildroot}%{_initrddir}/salt*
+## %endif
 
 # Logrotate
 install -p %{SOURCE10} .
@@ -335,7 +327,7 @@ install -p -m 0644  %{SOURCE21} %{buildroot}%{fish_dir}/salt-syndic.fish
 %check
 cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 mkdir %{_tmppath}/salt-test-cache
-PYTHONPATH=%{pythonpath}:$RPM_BUILD_DIR/%{name}-%{version}/%{_salttesting}-%{_salttesting_ver} %{__python} setup.py test --runtests-opts=-u
+PYTHONPATH=%{pythonpath} %{__python} setup.py test --runtests-opts=-u
 %endif
 
 %clean
@@ -448,35 +440,43 @@ rm -rf %{buildroot}
 
 %preun master
   if [ $1 -eq 0 ] ; then
-      /sbin/service salt-master stop >/dev/null 2>&1
-      /sbin/chkconfig --del salt-master
+    /sbin/service salt-master stop >/dev/null 2>&1
   fi
 
 %preun syndic
   if [ $1 -eq 0 ] ; then
       /sbin/service salt-syndic stop >/dev/null 2>&1
-      /sbin/chkconfig --del salt-syndic
   fi
 
 %preun minion
   if [ $1 -eq 0 ] ; then
       /sbin/service salt-minion stop >/dev/null 2>&1
-      /sbin/chkconfig --del salt-minion
   fi
 
 %preun api
   if [ $1 -eq 0 ] ; then
       /sbin/service salt-api stop >/dev/null 2>&1
-      /sbin/chkconfig --del salt-api
   fi
 
 %post master
-  /sbin/chkconfig --add salt-master
+  if [ "$1" -ge "2" ] ; then
+    /sbin/service salt-master condrestart >/dev/null 2>&1 || :
+  fi
+
+%post syndic
+  if [ "$1" -ge "2" ] ; then
+    /sbin/service salt-syndic condrestart >/dev/null 2>&1 || :
+  fi
 
 %post minion
-  /sbin/chkconfig --add salt-minion
+  if [ "$1" -ge "2" ] ; then
+    /sbin/service salt-minion condrestart >/dev/null 2>&1 || :
+  fi
 
-## auto enable of salt-syndic and salt-api on startup not implemented
+%post api
+  if [ "$1" -ge "2" ] ; then
+    /sbin/service salt-api condrestart >/dev/null 2>&1 || :
+  fi
 
 %postun master
   if [ "$1" -ge "1" ] ; then
@@ -622,16 +622,14 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Wed Jul 12 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2017.7.0-1
+- Update to feature release 2017.7.0
+- Added python-psutil as a requirement, disabled auto enable for Redhat 6
+
 * Thu Jun 22 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2016.11.6-1
 - Update to feature release 2016.11.6
 
-* Mon May 15 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2016.11.5-3
-- Add patch for Fix ipv6 nameserver grains #41244
-
-* Wed May 10 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2016.11.5-2
-- Commented out check for pycryptodomex on Fedora
-
-* Wed May 10 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2016.11.5-1
+* Thu Apr 27 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2016.11.5-1
 - Update to feature release 2016.11.5
 - Altered to use pycryptodomex if 64 bit and Redhat 6 and greater otherwise pycrypto
 - Addition of salt-proxy@.service
