@@ -43,7 +43,7 @@
 
 Name: salt
 Version: 2017.7.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -622,6 +622,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Thu Jul 27 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2017.7.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+
 * Wed Jul 12 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2017.7.0-1
 - Update to feature release 2017.7.0
 - Added python-psutil as a requirement, disabled auto enable for Redhat 6
