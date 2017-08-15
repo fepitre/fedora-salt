@@ -42,7 +42,7 @@
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name: salt
-Version: 2017.7.0
+Version: 2017.7.1
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -84,7 +84,12 @@ Requires: dmidecode
 
 Requires: pciutils
 Requires: which
+
+%if 0%{?fedora} >= 26
+Requires: dnf-utils
+%else
 Requires: yum-utils
+%endif
 
 
 %if ((0%{?rhel} >= 6 || 0%{?fedora} > 12) && 0%{?include_tests})
@@ -622,6 +627,10 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Tue Aug 15 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2017.7.1-1
+- Update to feature release 2017.7.1
+- Altered dependency for dnf-utils instead of yum-utils if Fedora 26 or greater
+
 * Wed Jul 12 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2017.7.0-1
 - Update to feature release 2017.7.0
 - Added python-psutil as a requirement, disabled auto enable for Redhat 6
