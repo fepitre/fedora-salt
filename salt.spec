@@ -42,8 +42,8 @@
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name: salt
-Version: 2017.7.0
-Release: 2%{?dist}
+Version: 2017.7.1
+Release: 1%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -84,7 +84,12 @@ Requires: dmidecode
 
 Requires: pciutils
 Requires: which
+
+%if 0%{?fedora} >= 26
+Requires: dnf-utils
+%else
 Requires: yum-utils
+%endif
 
 
 %if ((0%{?rhel} >= 6 || 0%{?fedora} > 12) && 0%{?include_tests})
@@ -622,8 +627,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
-* Thu Jul 27 2017 Fedora Release Engineering <releng@fedoraproject.org> - 2017.7.0-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
+* Tue Aug 15 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2017.7.1-1
+- Update to feature release 2017.7.1
+- Altered dependency for dnf-utils instead of yum-utils if Fedora 26 or greater
 
 * Wed Jul 12 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2017.7.0-1
 - Update to feature release 2017.7.0
