@@ -42,7 +42,7 @@
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name: salt
-Version: 2017.7.1
+Version: 2017.7.2
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -627,6 +627,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Mon Sep 18 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2017.7.2-1
+- Update to feature release 2017.7.2
+
 * Tue Aug 15 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2017.7.1-1
 - Update to feature release 2017.7.1
 - Altered dependency for dnf-utils instead of yum-utils if Fedora 26 or greater
