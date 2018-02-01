@@ -176,7 +176,7 @@ stop() {
         echo "Service $SERVICE:$MINION_USER:$MINION_ID is not running"
         return 0
     fi
-
+        
     echo -n "Stopping $SERVICE:$MINION_USER:$MINION_ID daemon: "
     local pid="$(_get_pid)"
 
