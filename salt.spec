@@ -42,7 +42,7 @@
 
 Name: salt
 Version: 2017.7.3%{?__rc_ver}
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -626,6 +626,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2017.7.3-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
+
 * Tue Jan 30 2018 SaltStack Packaging Team <packaging@Ch3LL.com> - 2017.7.3-1
 - Update to feature release 2017.7.3-1
 
