@@ -74,7 +74,6 @@ Source21: salt-syndic.fish
 ## Patch0:  salt-%%{version}-tests.patch
 
 
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
 
 %ifarch %{ix86} x86_64
