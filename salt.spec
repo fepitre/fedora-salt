@@ -41,8 +41,8 @@
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name: salt
-Version: 2017.7.3%{?__rc_ver}
-Release: 2%{?dist}
+Version: 2017.7.4%{?__rc_ver}
+Release: 1%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -74,6 +74,7 @@ Source21: salt-syndic.fish
 ## Patch0:  salt-%%{version}-tests.patch
 
 
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
 
 %ifarch %{ix86} x86_64
@@ -90,7 +91,7 @@ Requires: yum-utils
 %endif
 
 %if ((0%{?rhel} >= 6 || 0%{?fedora} > 12) && 0%{?include_tests})
-BuildRequires: python%{?__python_ver}-tornado >= 4.2.1
+BuildRequires: python%{?__python_ver}-tornado >= 4.2.1, python%{?__python_ver}-tornado < 5.0
 BuildRequires: python%{?__python_ver}-futures >= 2.0
 BuildRequires: python%{?__python_ver}-crypto >= 2.6.1
 BuildRequires: python%{?__python_ver}-jinja2
@@ -145,7 +146,7 @@ Requires: PyYAML
 Requires: python%{?__python_ver}-requests >= 1.0.0
 Requires: python%{?__python_ver}-zmq
 Requires: python%{?__python_ver}-markupsafe
-Requires: python%{?__python_ver}-tornado >= 4.2.1
+Requires: python%{?__python_ver}-tornado >= 4.2.1, python%{?__python_ver}-tornado < 5.0 
 Requires: python%{?__python_ver}-futures >= 2.0
 Requires: python%{?__python_ver}-six
 Requires: python%{?__python_ver}-psutil
@@ -332,6 +333,9 @@ cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 mkdir %{_tmppath}/salt-test-cache
 PYTHONPATH=%{pythonpath} %{__python} setup.py test --runtests-opts=-u
 %endif
+
+%clean
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
@@ -622,10 +626,14 @@ PYTHONPATH=%{pythonpath} %{__python} setup.py test --runtests-opts=-u
 %endif
 
 %changelog
-* Fri Feb 09 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2017.7.3-2
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
+* Tue Feb 20 2018 SaltStack Packaging Team <packaging@ch3ll.com> - 2017.7.4-1
+- Update to feature release 2017.7.4
 
-* Tue Jan 30 2018 SaltStack Packaging Team <packaging@Ch3LL.com> - 2017.7.3-1
+* Fri Feb 16 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2017.7.4-1
+- Update to feature release 2017.7.4-1
+- Limit to Tornado use to between versions 4.2.1 and less than 5.0
+
+* Tue Jan 30 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2017.7.3-1
 - Update to feature release 2017.7.3-1
 
 * Mon Sep 18 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2017.7.2-1
