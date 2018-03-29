@@ -41,7 +41,7 @@
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name: salt
-Version: 2017.7.4%{?__rc_ver}
+Version: 2017.7.5%{?__rc_ver}
 Release: 1%{?dist}
 Summary: A parallel remote execution system
 
@@ -626,8 +626,8 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
-* Tue Feb 20 2018 SaltStack Packaging Team <packaging@ch3ll.com> - 2017.7.4-1
-- Update to feature release 2017.7.4
+* Tue Mar 27 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2017.7.5-1
+- Update to feature release 2017.7.5-1  for Python 2
 
 * Fri Feb 16 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2017.7.4-1
 - Update to feature release 2017.7.4-1
