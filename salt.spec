@@ -622,7 +622,7 @@ PYTHONPATH=%{pythonpath} %{__python} setup.py test --runtests-opts=-u
 %endif
 
 %changelog
-* mon May 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-2
+* Mon May 07 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-2
 - Corrected changelog and cleaned up spec file
 
 * Fri Mar 30 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-1
