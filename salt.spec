@@ -13,10 +13,13 @@
 %global __inst_layout --install-layout=unix
 
 %else
+%global pybasever 2.7
+%global __python %{_bindir}/python%{?pybasever}
+%global __python2 %{_bindir}/python%{?pybasever}
 
-%{!?python2_sitelib: %global python2_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%{!?python2_sitearch: %global python2_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
-%{!?pythonpath: %global pythonpath %(%{__python} -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
+%{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
+%{!?python2_sitearch: %global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
+%{!?pythonpath: %global pythonpath %(%{__python2} -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
 
 
 %if 0%{?rhel} == 6
@@ -42,7 +45,7 @@
 
 Name: salt
 Version: 2018.3.2%{?__rc_ver}
-Release: 1%{?dist}
+Release: 3%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -146,7 +149,7 @@ Requires: PyYAML
 Requires: python%{?__python_ver}-requests >= 1.0.0
 Requires: python%{?__python_ver}-zmq
 Requires: python%{?__python_ver}-markupsafe
-Requires: python%{?__python_ver}-tornado >= 4.2.1, python%{?__python_ver}-tornado < 5.0 
+Requires: python%{?__python_ver}-tornado >= 4.2.1, python%{?__python_ver}-tornado < 6.0 
 Requires: python%{?__python_ver}-futures >= 2.0
 Requires: python%{?__python_ver}-six
 Requires: python%{?__python_ver}-psutil
@@ -255,7 +258,7 @@ cd %{name}-%{version}
 %install
 rm -rf %{buildroot}
 cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
-%{__python} setup.py install -O1 %{?__inst_layout } --root %{buildroot}
+%{__python2} setup.py install -O1 %{?__inst_layout } --root %{buildroot}
 
 # Add some directories
 install -d -m 0755 %{buildroot}%{_var}/log/salt
@@ -306,6 +309,13 @@ install -p -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/
 ## sed -i 's#/usr/bin/python#/usr/bin/python2.7#g' %{buildroot}%{_initrddir}/salt*
 ## %endif
 
+%if 0%{?fedora} >= 28
+sed -i 's#/usr/bin/python#/usr/bin/python2.7#g' %{buildroot}%{_bindir}/spm
+sed -i 's#/usr/bin/python#/usr/bin/python2.7#g' %{buildroot}%{_bindir}/salt*
+## sed -i 's#/usr/bin/python#/usr/bin/python2.7#g' %{buildroot}%{_initrddir}/salt*
+%endif
+
+
 # Logrotate
 install -p %{SOURCE10} .
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d/
@@ -331,7 +341,7 @@ install -p -m 0644  %{SOURCE21} %{buildroot}%{fish_dir}/salt-syndic.fish
 %check
 cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 mkdir %{_tmppath}/salt-test-cache
-PYTHONPATH=%{pythonpath} %{__python} setup.py test --runtests-opts=-u
+PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
 %endif
 
 %clean
@@ -626,6 +636,12 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Mon Jul 09 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.2-3
+- Allow for removal of /usr/bin/python
+
+* Mon Jul 09 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.2-2
+- Correct tornado version check
+
 * Thu Jun 21 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.2-1
 - Update to feature release 2018.3.2-1  for Python 2
 
