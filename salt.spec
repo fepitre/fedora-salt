@@ -348,7 +348,6 @@ PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
 rm -rf %{buildroot}
 
 %files
-%defattr(-,root,root,-)
 %doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
 %{python2_sitelib}/%{name}/*
 #%%{python2_sitelib}/%%{name}-%%{version}-py?.?.egg-info
@@ -371,7 +370,6 @@ rm -rf %{buildroot}
 %config(noreplace) %{fish_dir}/salt*.fish
 
 %files master
-%defattr(-,root,root)
 %doc %{_mandir}/man7/salt.7*
 %doc %{_mandir}/man1/salt.1*
 %doc %{_mandir}/man1/salt-cp.1*
@@ -395,7 +393,6 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/salt/pki/master
 
 %files minion
-%defattr(-,root,root)
 %doc %{_mandir}/man1/salt-call.1*
 %doc %{_mandir}/man1/salt-minion.1*
 %doc %{_mandir}/man1/salt-proxy.1*
@@ -423,7 +420,6 @@ rm -rf %{buildroot}
 %endif
 
 %files api
-%defattr(-,root,root)
 %doc %{_mandir}/man1/salt-api.1*
 %{_bindir}/salt-api
 %if ! (0%{?rhel} >= 7 || 0%{?fedora} >= 15)
