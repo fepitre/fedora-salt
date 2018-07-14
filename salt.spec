@@ -45,7 +45,7 @@
 
 Name: salt
 Version: 2018.3.2%{?__rc_ver}
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: A parallel remote execution system
 
 Group:   System Environment/Daemons
@@ -632,6 +632,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2018.3.2-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
+
 * Mon Jul 09 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.2-3
 - Allow for removal of /usr/bin/python
 
