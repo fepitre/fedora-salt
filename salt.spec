@@ -15,7 +15,6 @@ Version: 2018.3.3
 Release: 2%{?dist}
 Summary: A parallel remote execution system
 
-Group:   System Environment/Daemons
 License: ASL 2.0
 URL:     http://saltstack.org/
 Source0: https://pypi.io/packages/source/s/%{name}/%{name}-%{version}.tar.gz
@@ -117,7 +116,6 @@ servers, handle them quickly and through a simple and manageable interface.
 
 %package master
 Summary: Management component for salt, a parallel remote execution system
-Group:   System Environment/Daemons
 Requires: %{name} = %{version}-%{release}
 Requires: systemd-python
 
@@ -126,7 +124,6 @@ The Salt master is the central server to which all minions connect.
 
 %package minion
 Summary: Client component for Salt, a parallel remote execution system
-Group:   System Environment/Daemons
 Requires: %{name} = %{version}-%{release}
 
 %description minion
@@ -135,7 +132,6 @@ from the master, runs jobs, and returns results back to the master.
 
 %package syndic
 Summary: Master-of-master component for Salt, a parallel remote execution system
-Group:   System Environment/Daemons
 Requires: %{name}-master = %{version}-%{release}
 
 %description syndic
@@ -145,7 +141,6 @@ infrastructure.
 
 %package api
 Summary: REST API for Salt, a parallel remote execution system
-Group:   Applications/System
 Requires: %{name}-master = %{version}-%{release}
 Requires: python2-cherrypy >= 3.2.2, python2-cherrypy < 18.0.0
 
@@ -154,7 +149,6 @@ salt-api provides a REST interface to the Salt master.
 
 %package cloud
 Summary: Cloud provisioner for Salt, a parallel remote execution system
-Group:   Applications/System
 Requires: %{name}-master = %{version}-%{release}
 Requires: python2-libcloud
 
@@ -164,7 +158,6 @@ adds them to the master's collection of controllable minions.
 
 %package ssh
 Summary: Agentless SSH-based version of Salt, a parallel remote execution system
-Group:   Applications/System
 Requires: %{name} = %{version}-%{release}
 
 %description ssh
