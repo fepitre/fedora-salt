@@ -240,9 +240,6 @@ mkdir %{_tmppath}/salt-test-cache
 PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
 %endif
 
-%clean
-rm -rf %{buildroot}
-
 %files
 %doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
 %{python2_sitelib}/%{name}/*
