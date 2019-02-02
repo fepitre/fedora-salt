@@ -12,7 +12,7 @@
 
 Name: salt
 Version: 2018.3.3
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: A parallel remote execution system
 
 License: ASL 2.0
@@ -439,6 +439,9 @@ PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
 
 
 %changelog
+* Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2018.3.3-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
 * Thu Nov 29 2018 SaltStack Packaging Team <packaging@Ch3LL.com> - 2018.3.3-2
 - Revised BuildRequires and Requires to use python2 versions of packages
 - Cleaned up spec file to apply to Fedora 28 and above
