@@ -11,11 +11,10 @@
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name: salt
-Version: 2018.3.3
-Release: 2%{?dist}
+Version: 2019.2.0
+Release: 1%{?dist}
 Summary: A parallel remote execution system
 
-Group:   System Environment/Daemons
 License: ASL 2.0
 URL:     http://saltstack.org/
 Source0: https://pypi.io/packages/source/s/%{name}/%{name}-%{version}.tar.gz
@@ -44,7 +43,6 @@ Source21: salt-syndic.fish
 ## Patch0:  salt-%%{version}-tests.patch
 
 
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
 
 %ifarch %{ix86} x86_64
@@ -117,7 +115,6 @@ servers, handle them quickly and through a simple and manageable interface.
 
 %package master
 Summary: Management component for salt, a parallel remote execution system
-Group:   System Environment/Daemons
 Requires: %{name} = %{version}-%{release}
 Requires: systemd-python
 
@@ -126,7 +123,6 @@ The Salt master is the central server to which all minions connect.
 
 %package minion
 Summary: Client component for Salt, a parallel remote execution system
-Group:   System Environment/Daemons
 Requires: %{name} = %{version}-%{release}
 
 %description minion
@@ -135,7 +131,6 @@ from the master, runs jobs, and returns results back to the master.
 
 %package syndic
 Summary: Master-of-master component for Salt, a parallel remote execution system
-Group:   System Environment/Daemons
 Requires: %{name}-master = %{version}-%{release}
 
 %description syndic
@@ -145,7 +140,6 @@ infrastructure.
 
 %package api
 Summary: REST API for Salt, a parallel remote execution system
-Group:   Applications/System
 Requires: %{name}-master = %{version}-%{release}
 Requires: python2-cherrypy >= 3.2.2, python2-cherrypy < 18.0.0
 
@@ -154,7 +148,6 @@ salt-api provides a REST interface to the Salt master.
 
 %package cloud
 Summary: Cloud provisioner for Salt, a parallel remote execution system
-Group:   Applications/System
 Requires: %{name}-master = %{version}-%{release}
 Requires: python2-libcloud
 
@@ -164,7 +157,6 @@ adds them to the master's collection of controllable minions.
 
 %package ssh
 Summary: Agentless SSH-based version of Salt, a parallel remote execution system
-Group:   Applications/System
 Requires: %{name} = %{version}-%{release}
 
 %description ssh
@@ -247,9 +239,6 @@ cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 mkdir %{_tmppath}/salt-test-cache
 PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
 %endif
-
-%clean
-rm -rf %{buildroot}
 
 %files
 %doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
@@ -450,6 +439,12 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Mon Mar 04 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2019.2.0-1
+- Update to feature release 2019.2.0-1 for Python 2
+
+* Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2018.3.3-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
 * Thu Nov 29 2018 SaltStack Packaging Team <packaging@Ch3LL.com> - 2018.3.3-2
 - Revised BuildRequires and Requires to use python2 versions of packages
 - Cleaned up spec file to apply to Fedora 28 and above
