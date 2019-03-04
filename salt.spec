@@ -11,8 +11,8 @@
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name: salt
-Version: 2018.3.3
-Release: 3%{?dist}
+Version: 2019.2.0
+Release: 1%{?dist}
 Summary: A parallel remote execution system
 
 License: ASL 2.0
@@ -164,9 +164,8 @@ The salt-ssh tool can run remote execution functions and states without the use
 of an agent (salt-minion) service.
 
 %prep
-## %%setup -q -c
+%setup -q -c
 ## %%setup -q -T -D -a 1
-%setup -c
 
 cd %{name}-%{version}
 ## %%patch0 -p1
@@ -439,6 +438,9 @@ PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
 
 
 %changelog
+* Mon Mar 04 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2019.2.0-1
+- Update to feature release 2019.2.0-1 for Python 2
+
 * Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2018.3.3-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
