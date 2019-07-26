@@ -12,7 +12,7 @@
 
 Name: salt
 Version: 2019.2.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A parallel remote execution system
 
 License: ASL 2.0
@@ -438,6 +438,9 @@ PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
 
 
 %changelog
+* Fri Jul 26 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2019.2.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
+
 * Mon Mar 04 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2019.2.0-1
 - Update to feature release 2019.2.0-1 for Python 2
 
