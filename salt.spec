@@ -1,23 +1,25 @@
-%global pybasever 2.7
-%global __python2 %{_bindir}/python%{?pybasever}
 
-%{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%{!?python2_sitearch: %global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
-%{!?pythonpath: %global pythonpath %(%{__python2} -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
+%bcond_with tests
+%bcond_with docs
 
+%{!?python3_pkgversion:%global python3_pkgversion 3}
 
 %global include_tests 0
 
+# Release Candidate
+%define __rc_ver rc0
+
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
-Name: salt
-Version: 2019.2.0
-Release: 2%{?dist}
+Name:    salt
+Version: 2019.2.1%{?__rc_ver}
+Release: 1%{?dist}
 Summary: A parallel remote execution system
 
 License: ASL 2.0
 URL:     http://saltstack.org/
-Source0: https://pypi.io/packages/source/s/%{name}/%{name}-%{version}.tar.gz
+## Source0: https://pypi.io/packages/source/s/%%{name}/%%{name}-%%{version}.tar.gz
+Source0: %{name}-%{version}.tar.gz
 Source1: %{name}-proxy@.service
 Source2: %{name}-master
 Source3: %{name}-syndic
@@ -54,55 +56,37 @@ Requires: which
 
 Requires: dnf-utils
 
-%if ((0%{?fedora} >= 28) && 0%{?include_tests})
-BuildRequires: python2-tornado >= 4.2.1
-BuildRequires: python2-futures >= 2.0
-BuildRequires: python2-crypto >= 2.6.1
-BuildRequires: python2-jinja2
-BuildRequires: python2-msgpack >= 0.4
-BuildRequires: python2-pip
-BuildRequires: python2-zmq >= 14.5
-
-BuildRequires: python2-pyyaml
-
-BuildRequires: python2-requests
-## BuildRequires: python2-unittest2
-
-# this BR causes windows tests to happen
-# clearly, that's not desired
-# https://github.com/saltstack/salt/issues/3749
-BuildRequires: python2-mock
-BuildRequires: git
-BuildRequires: python2-libcloud
-BuildRequires: python2-six
-
-%endif  ##  (0%%{?fedora} >= 28) && 0%%{?include_tests})
-
-BuildRequires: python2-devel
-
-Requires: python2-jinja2
-Requires: python2-msgpack >= 0.4
-Requires: python2-crypto >= 2.6.1
-Requires: python2-pyyaml
-Requires: python2-requests >= 1.0.0
-Requires: python2-zmq
-Requires: python2-markupsafe
-Requires: python2-tornado >= 4.2.1, python2-tornado < 6.0 
-Requires: python2-futures >= 2.0
-Requires: python2-six
-Requires: python2-psutil
-
-
 %if 0%{?systemd_preun:1}
-
 Requires(post): systemd-units
 Requires(preun): systemd-units
 Requires(postun): systemd-units
-
 %endif
 
 BuildRequires: systemd-units
-Requires:      systemd-python
+Requires:      python%{python3_pkgversion}-systemd
+
+BuildRequires: python%{python3_pkgversion}-devel
+BuildRequires: python%{python3_pkgversion}-requests
+BuildRequires: python%{python3_pkgversion}-mock
+BuildRequires: python%{python3_pkgversion}-libcloud
+BuildRequires: python%{python3_pkgversion}-six
+BuildRequires: python%{python3_pkgversion}-pyyaml
+BuildRequires: git
+
+Requires: python%{python3_pkgversion}-jinja2
+Requires: python%{python3_pkgversion}-msgpack >= 0.4
+
+## Requires: python%%{python3_pkgversion}-crypto >= 2.6.1
+Requires: python%{python3_pkgversion}-m2crypto >= 0.31.0
+
+Requires: python%{python3_pkgversion}-requests
+Requires: python%{python3_pkgversion}-zmq
+Requires: python%{python3_pkgversion}-markupsafe
+Requires: python%{python3_pkgversion}-tornado4 >= 4.2.1
+Requires: python%{python3_pkgversion}-six
+Requires: python%{python3_pkgversion}-psutil
+Requires: python%{python3_pkgversion}-pyyaml
+
 
 
 %description
@@ -113,70 +97,100 @@ malleable. Salt accomplishes this via its ability to handle larger loads of
 information, and not just dozens, but hundreds or even thousands of individual
 servers, handle them quickly and through a simple and manageable interface.
 
-%package master
-Summary: Management component for salt, a parallel remote execution system
-Requires: %{name} = %{version}-%{release}
-Requires: systemd-python
+%package    master
+Summary:    Management component for salt, a parallel remote execution system
+Group:      System Environment/Daemons
+Requires:   %{name} = %{version}-%{release}
+Requires:   python%{python3_pkgversion}-systemd
 
 %description master
 The Salt master is the central server to which all minions connect.
+Supports Python 3.
 
-%package minion
-Summary: Client component for Salt, a parallel remote execution system
-Requires: %{name} = %{version}-%{release}
+
+%package    minion
+Summary:    Client component for Salt, a parallel remote execution system
+Group:      System Environment/Daemons
+Requires:   %{name} = %{version}-%{release}
 
 %description minion
 The Salt minion is the agent component of Salt. It listens for instructions
 from the master, runs jobs, and returns results back to the master.
+Supports Python 3.
 
-%package syndic
-Summary: Master-of-master component for Salt, a parallel remote execution system
-Requires: %{name}-master = %{version}-%{release}
+
+%package    syndic
+Summary:    Master-of-master component for Salt, a parallel remote execution system
+Group:      System Environment/Daemons
+Requires:   %{name}-master = %{version}-%{release}
 
 %description syndic
 The Salt syndic is a master daemon which can receive instruction from a
 higher-level master, allowing for tiered organization of your Salt
 infrastructure.
+Supports Python 3.
 
-%package api
-Summary: REST API for Salt, a parallel remote execution system
-Requires: %{name}-master = %{version}-%{release}
-Requires: python2-cherrypy >= 3.2.2, python2-cherrypy < 18.0.0
+
+%package    api
+Summary:    REST API for Salt, a parallel remote execution system
+Group:      Applications/System
+Requires:   %{name}-master = %{version}-%{release}
+Requires:   python%{python3_pkgversion}-cherrypy >= 3.2.2
 
 %description api
 salt-api provides a REST interface to the Salt master.
+Supports Python 3.
 
-%package cloud
-Summary: Cloud provisioner for Salt, a parallel remote execution system
-Requires: %{name}-master = %{version}-%{release}
-Requires: python2-libcloud
+
+%package    cloud
+Summary:    Cloud provisioner for Salt, a parallel remote execution system
+Group:      Applications/System
+Requires:   %{name}-master = %{version}-%{release}
+Requires:   python%{python3_pkgversion}-libcloud
 
 %description cloud
 The salt-cloud tool provisions new cloud VMs, installs salt-minion on them, and
 adds them to the master's collection of controllable minions.
+Supports Python 3.
 
-%package ssh
-Summary: Agentless SSH-based version of Salt, a parallel remote execution system
-Requires: %{name} = %{version}-%{release}
+
+%package    ssh
+Summary:    Agentless SSH-based version of Salt, a parallel remote execution system
+Group:      Applications/System
+Requires:   %{name} = %{version}-%{release}
 
 %description ssh
 The salt-ssh tool can run remote execution functions and states without the use
 of an agent (salt-minion) service.
+Supports Python 3.
+
 
 %prep
-%setup -q -c
+## %%setup -q -c
 ## %%setup -q -T -D -a 1
+%setup -c
 
 cd %{name}-%{version}
 ## %%patch0 -p1
 
+
+rm -rf %{py3dir}
+cp -a . %{py3dir}
+
+
 %build
+pushd %{py3dir}
+%py3_build
+popd
 
 
 %install
 rm -rf %{buildroot}
 cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
-%{__python2} setup.py install -O1 %{?__inst_layout } --root %{buildroot}
+
+## rm -rf %%{buildroot}
+pushd %{py3dir}
+%py3_install
 
 # Add some directories
 install -d -m 0755 %{buildroot}%{_var}/log/salt
@@ -189,19 +203,19 @@ install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/minion.d
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/pki
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/pki/master
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/pki/minion
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.conf.d
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.deploy.d
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.maps.d
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.profiles.d
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.providers.d
+install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.conf.d
+install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.deploy.d
+install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.maps.d
+install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.profiles.d
+install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.providers.d
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/proxy.d
 
 # Add the config files
 install -p -m 0640 conf/minion %{buildroot}%{_sysconfdir}/salt/minion
 install -p -m 0640 conf/master %{buildroot}%{_sysconfdir}/salt/master
-install -p -m 0640 conf/cloud %{buildroot}%{_sysconfdir}/salt/cloud
+install -p -m 0600 conf/cloud  %{buildroot}%{_sysconfdir}/salt/cloud
 install -p -m 0640 conf/roster %{buildroot}%{_sysconfdir}/salt/roster
-install -p -m 0640 conf/proxy %{buildroot}%{_sysconfdir}/salt/proxy
+install -p -m 0640 conf/proxy  %{buildroot}%{_sysconfdir}/salt/proxy
 
 # Add the unit files
 mkdir -p %{buildroot}%{_unitdir}
@@ -232,32 +246,35 @@ install -p -m 0644  %{SOURCE19} %{buildroot}%{fish_dir}/salt-minion.fish
 install -p -m 0644  %{SOURCE20} %{buildroot}%{fish_dir}/salt-run.fish
 install -p -m 0644  %{SOURCE21} %{buildroot}%{fish_dir}/salt-syndic.fish
 
-%if ((0%{?fedora} >= 28) && 0%{?include_tests})
-%check
-cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
-mkdir %{_tmppath}/salt-test-cache
-PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
-%endif
+popd
+
+
+%clean
+rm -rf %{buildroot}
+
 
 %files
-%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
-%{python2_sitelib}/%{name}/*
-#%%{python2_sitelib}/%%{name}-%%{version}-py?.?.egg-info
-
-%{python2_sitelib}/%{name}-*-py?.?.egg-info
-
+%defattr(-,root,root,-)
+%{python3_sitelib}/%{name}/*
+%{python3_sitelib}/%{name}-*-py?.?.egg-info
 %{_sysconfdir}/logrotate.d/salt
 %{_sysconfdir}/bash_completion.d/salt.bash
 %{_var}/cache/salt
 %{_var}/log/salt
-%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/README.fedora
-%{_bindir}/spm
+
+## %%doc $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}/LICENSE
+## %%doc $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}/README.fedora
+%doc $RPM_BUILD_DIR/python3-%{name}-%{version}-%{release}/LICENSE
+%doc $RPM_BUILD_DIR/python3-%{name}-%{version}-%{release}/README.fedora
+
+/%{_bindir}/spm
 %doc %{_mandir}/man1/spm.1*
 %config(noreplace) %{_sysconfdir}/salt/
 %config(noreplace) %{_sysconfdir}/salt/pki
 %config(noreplace) %{fish_dir}/salt*.fish
 
 %files master
+%defattr(-,root,root)
 %doc %{_mandir}/man7/salt.7*
 %doc %{_mandir}/man1/salt.1*
 %doc %{_mandir}/man1/salt-cp.1*
@@ -277,6 +294,7 @@ PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
 %config(noreplace) %{_sysconfdir}/salt/pki/master
 
 %files minion
+%defattr(-,root,root)
 %doc %{_mandir}/man1/salt-call.1*
 %doc %{_mandir}/man1/salt-minion.1*
 %doc %{_mandir}/man1/salt-proxy.1*
@@ -296,6 +314,7 @@ PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
 %{_unitdir}/salt-syndic.service
 
 %files api
+%defattr(-,root,root)
 %doc %{_mandir}/man1/salt-api.1*
 %{_bindir}/salt-api
 %{_unitdir}/salt-api.service
@@ -438,6 +457,9 @@ PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
 
 
 %changelog
+* Thu Aug 29 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2019.2.1rc0-1
+- Release Candidate 0 for feature release 2019.2.1 for Python 3 with Tornado v5.x support
+
 * Fri Jul 26 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2019.2.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
