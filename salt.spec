@@ -18,8 +18,7 @@ Summary: A parallel remote execution system
 
 License: ASL 2.0
 URL:     http://saltstack.org/
-## Source0: https://pypi.io/packages/source/s/%%{name}/%%{name}-%%{version}.tar.gz
-Source0: %{name}-%{version}.tar.gz
+Source0: https://pypi.io/packages/source/s/%{name}/%{name}-%{version}.tar.gz
 Source1: %{name}-proxy@.service
 Source2: %{name}-master
 Source3: %{name}-syndic
@@ -166,9 +165,8 @@ Supports Python 3.
 
 
 %prep
-## %%setup -q -c
+%setup -q -c
 ## %%setup -q -T -D -a 1
-%setup -c
 
 cd %{name}-%{version}
 ## %%patch0 -p1
