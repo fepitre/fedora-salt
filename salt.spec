@@ -13,7 +13,7 @@
 
 Name:    salt
 Version: 2019.2.1%{?__rc_ver}
-Release: 1%{?dist}
+Release: 3%{?dist}
 Summary: A parallel remote execution system
 
 License: ASL 2.0
@@ -70,6 +70,7 @@ BuildRequires: python%{python3_pkgversion}-mock
 BuildRequires: python%{python3_pkgversion}-libcloud
 BuildRequires: python%{python3_pkgversion}-six
 BuildRequires: python%{python3_pkgversion}-pyyaml
+BuildRequires: python%{python3_pkgversion}-distro
 BuildRequires: git
 
 Requires: python%{python3_pkgversion}-jinja2
@@ -81,10 +82,11 @@ Requires: python%{python3_pkgversion}-m2crypto >= 0.31.0
 Requires: python%{python3_pkgversion}-requests
 Requires: python%{python3_pkgversion}-zmq
 Requires: python%{python3_pkgversion}-markupsafe
-Requires: python%{python3_pkgversion}-tornado4 >= 4.2.1
+Requires: python%{python3_pkgversion}-tornado >= 4.2.1
 Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
 Requires: python%{python3_pkgversion}-pyyaml
+Requires: python%{python3_pkgversion}-distro
 
 
 
@@ -455,6 +457,12 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Fri Aug 30 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2019.2.1rc0-3
+- Fixed tornado requirement
+
+* Fri Aug 30 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2019.2.1rc0-2
+- Added python3-distro as a requirement
+
 * Thu Aug 29 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2019.2.1rc0-1
 - Release Candidate 0 for feature release 2019.2.1 for Python 3 with Tornado v5.x support
 
