@@ -13,7 +13,7 @@
 
 Name:    salt
 Version: 2019.2.1%{?__rc_ver}
-Release: 4%{?dist}
+Release: 5%{?dist}
 Summary: A parallel remote execution system
 
 License: ASL 2.0
@@ -457,6 +457,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Thu Jan 30 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2019.2.1rc0-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
 * Thu Oct 03 2019 Miro Hrončok <mhroncok@redhat.com> - 2019.2.1rc0-4
 - Rebuilt for Python 3.8.0rc1 (#1748018)
 
