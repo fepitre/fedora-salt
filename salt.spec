@@ -215,7 +215,7 @@ Supports Python 3.
 
 %prep
 ## %%autosetup
-%setup -c
+%setup -q -c
 cd %{name}-%{version}
 ## %%if 0%%{?rhel} > 7
 ## %%patch0 -p1
@@ -310,7 +310,7 @@ popd
 
 %if (%{with python2} && 0%{with tests})
 %check
-## cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
+## cd $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}
 cd $RPM_BUILD_DIR/%{name}-%{version}
 mkdir %{_tmppath}/salt-test-cache
 PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
