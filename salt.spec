@@ -1,20 +1,29 @@
-%global pybasever 2.7
-%global __python2 %{_bindir}/python%{?pybasever}
+## For Python 3 only RHEL 7 & 8
 
-%{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%{!?python2_sitearch: %global python2_sitearch %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
-%{!?pythonpath: %global pythonpath %(%{__python2} -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
+%bcond_with python2
+%bcond_without python3
 
+%bcond_with tests
+%bcond_with docs
+
+%if 0%{?rhel} > 7
+%global python3_pkgversion 3
+%else
+%{!?python3_pkgversion:%global python3_pkgversion 3}
+%endif
 
 %global include_tests 0
 
+# Release Candidate
+%define __rc_ver %{nil}
+
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
-Name: salt
-Version: 2019.2.0
+Name:    salt
+Version: 3000%{?__rc_ver}
 Release: 1%{?dist}
 Summary: A parallel remote execution system
-
+Group:   System Environment/Daemons
 License: ASL 2.0
 URL:     http://saltstack.org/
 Source0: https://pypi.io/packages/source/s/%{name}/%{name}-%{version}.tar.gz
@@ -40,9 +49,13 @@ Source19: salt-minion.fish
 Source20: salt-run.fish
 Source21: salt-syndic.fish
 
-## Patch0:  salt-%%{version}-tests.patch
+## %%if 0%%{?rhel} > 7
+## Patch0:  salt-py3-2019.2.2-tornado4.patch
+## %%endif
+Patch1:  salt-py3-2019.2.1-rpmsign.patch
+Patch2: salt-m2_requirements.patch
 
-
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
 
 %ifarch %{ix86} x86_64
@@ -52,57 +65,65 @@ Requires: dmidecode
 Requires: pciutils
 Requires: which
 
+%if 0%{?fedora} >= 26
 Requires: dnf-utils
-
-%if ((0%{?fedora} >= 28) && 0%{?include_tests})
-BuildRequires: python2-tornado >= 4.2.1
-BuildRequires: python2-futures >= 2.0
-BuildRequires: python2-crypto >= 2.6.1
-BuildRequires: python2-jinja2
-BuildRequires: python2-msgpack >= 0.4
-BuildRequires: python2-pip
-BuildRequires: python2-zmq >= 14.5
-
-BuildRequires: python2-pyyaml
-
-BuildRequires: python2-requests
-## BuildRequires: python2-unittest2
-
-# this BR causes windows tests to happen
-# clearly, that's not desired
-# https://github.com/saltstack/salt/issues/3749
-BuildRequires: python2-mock
-BuildRequires: git
-BuildRequires: python2-libcloud
-BuildRequires: python2-six
-
-%endif  ##  (0%%{?fedora} >= 28) && 0%%{?include_tests})
-
-BuildRequires: python2-devel
-
-Requires: python2-jinja2
-Requires: python2-msgpack >= 0.4
-Requires: python2-crypto >= 2.6.1
-Requires: python2-pyyaml
-Requires: python2-requests >= 1.0.0
-Requires: python2-zmq
-Requires: python2-markupsafe
-Requires: python2-tornado >= 4.2.1, python2-tornado < 6.0 
-Requires: python2-futures >= 2.0
-Requires: python2-six
-Requires: python2-psutil
+%else
+Requires: yum-utils
+%endif
 
 
 %if 0%{?systemd_preun:1}
-
 Requires(post): systemd-units
 Requires(preun): systemd-units
 Requires(postun): systemd-units
-
 %endif
 
 BuildRequires: systemd-units
-Requires:      systemd-python
+
+
+%if %{with python3}
+BuildRequires: python%{python3_pkgversion}-devel
+BuildRequires: python%{python3_pkgversion}-requests
+BuildRequires: python%{python3_pkgversion}-mock
+BuildRequires: python%{python3_pkgversion}-libcloud
+BuildRequires: python%{python3_pkgversion}-six
+%if 0%{?rhel} == 7
+BuildRequires: python%{python3_pkgversion}-PyYAML
+%else
+BuildRequires: python%{python3_pkgversion}-pyyaml
+## BuildRequires: python%%{python3_pkgversion}-distro
+%endif
+BuildRequires: git
+
+Requires: python%{python3_pkgversion}-jinja2
+Requires: python%{python3_pkgversion}-msgpack >= 0.4
+
+## for dump requirements file
+## Requires: python%{python3_pkgversion}-crypto >= 2.6.1
+
+Requires: python%{python3_pkgversion}-m2crypto >= 0.31.0
+
+Requires: python%{python3_pkgversion}-requests
+Requires: python%{python3_pkgversion}-zmq
+Requires: python%{python3_pkgversion}-markupsafe
+
+## Tornado removed in Neon
+## %%if 0%%{?rhel} == 7
+## Requires: python%%{python3_pkgversion}-tornado >= 4.2.1, python%%{python3_pkgversion}-tornado < 5.0
+## %%else
+## Requires: python%%{python3_pkgversion}-tornado4 >= 4.2.1, python%%{python3_pkgversion}-tornado4 < 5.0
+## %%endif
+Requires: python%{python3_pkgversion}-pycurl
+
+Requires: python%{python3_pkgversion}-six
+Requires: python%{python3_pkgversion}-psutil
+%if 0%{?rhel} == 7
+Requires: python%{python3_pkgversion}-PyYAML
+%else
+Requires: python%{python3_pkgversion}-pyyaml
+Requires: python%{python3_pkgversion}-distro
+%endif
+%endif
 
 
 %description
@@ -113,70 +134,121 @@ malleable. Salt accomplishes this via its ability to handle larger loads of
 information, and not just dozens, but hundreds or even thousands of individual
 servers, handle them quickly and through a simple and manageable interface.
 
-%package master
-Summary: Management component for salt, a parallel remote execution system
-Requires: %{name} = %{version}-%{release}
+
+%if %{with python3}
+%package    master
+Summary:    Management component for salt, a parallel remote execution system
+Group:      System Environment/Daemons
+Requires:   %{name} = %{version}-%{release}
+%if 0%{?rhel} > 7
+Requires: python%{python3_pkgversion}-systemd
+%else
 Requires: systemd-python
+%endif
 
 %description master
 The Salt master is the central server to which all minions connect.
+Supports Python 3.
 
-%package minion
-Summary: Client component for Salt, a parallel remote execution system
-Requires: %{name} = %{version}-%{release}
+
+%package    minion
+Summary:    Client component for Salt, a parallel remote execution system
+Group:      System Environment/Daemons
+Requires:   %{name} = %{version}-%{release}
 
 %description minion
 The Salt minion is the agent component of Salt. It listens for instructions
 from the master, runs jobs, and returns results back to the master.
+Supports Python 3.
 
-%package syndic
-Summary: Master-of-master component for Salt, a parallel remote execution system
-Requires: %{name}-master = %{version}-%{release}
+
+%package    syndic
+Summary:    Master-of-master component for Salt, a parallel remote execution system
+Group:      System Environment/Daemons
+Requires:   %{name}-master = %{version}-%{release}
 
 %description syndic
 The Salt syndic is a master daemon which can receive instruction from a
 higher-level master, allowing for tiered organization of your Salt
 infrastructure.
+Supports Python 3.
 
-%package api
-Summary: REST API for Salt, a parallel remote execution system
-Requires: %{name}-master = %{version}-%{release}
-Requires: python2-cherrypy >= 3.2.2, python2-cherrypy < 18.0.0
+
+%package    api
+Summary:    REST API for Salt, a parallel remote execution system
+Group:      Applications/System
+Requires:   %{name}-master = %{version}-%{release}
+%if ( "%{python3_pkgversion}" < "35" )
+Requires: python%{python3_pkgversion}-cherrypy >= 3.2.2, python%{python3_pkgversion}-cherrypy < 18.0.0
+%else
+Requires: python%{python3_pkgversion}-cherrypy >= 3.2.2
+%endif
 
 %description api
 salt-api provides a REST interface to the Salt master.
+Supports Python 3.
 
-%package cloud
-Summary: Cloud provisioner for Salt, a parallel remote execution system
-Requires: %{name}-master = %{version}-%{release}
-Requires: python2-libcloud
+
+%package    cloud
+Summary:    Cloud provisioner for Salt, a parallel remote execution system
+Group:      Applications/System
+Requires:   %{name}-master = %{version}-%{release}
+Requires:   python%{python3_pkgversion}-libcloud
 
 %description cloud
 The salt-cloud tool provisions new cloud VMs, installs salt-minion on them, and
 adds them to the master's collection of controllable minions.
+Supports Python 3.
 
-%package ssh
-Summary: Agentless SSH-based version of Salt, a parallel remote execution system
-Requires: %{name} = %{version}-%{release}
+
+%package    ssh
+Summary:    Agentless SSH-based version of Salt, a parallel remote execution system
+Group:      Applications/System
+Requires:   %{name} = %{version}-%{release}
 
 %description ssh
 The salt-ssh tool can run remote execution functions and states without the use
 of an agent (salt-minion) service.
+Supports Python 3.
+%endif
+
 
 %prep
-%setup -q -c
-## %%setup -q -T -D -a 1
-
+## %%autosetup
+%setup -c
 cd %{name}-%{version}
+## %%if 0%%{?rhel} > 7
 ## %%patch0 -p1
+## %%endif
+%patch1 -p1
+%patch2 -p1
+
+%if %{with python3}
+rm -rf %{py3dir}
+cp -a . %{py3dir}
+%endif # with_python3
+
 
 %build
+%if %{with python3}
+pushd %{py3dir}
+## %%py3_build
+## py3_shbang_opts is '-s' and causing issues with pip install
+## CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}" %%{__python3} %%{py_setup} %%{?py_setup_args} build --executable="%%{__python3} %%{py3_shbang_opts}" %%{?*}
+CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}" %{__python3} %{py_setup} %{?py_setup_args} build --executable="%{__python3}" %{?*}
+sleep 1
+popd
+%endif
 
 
 %install
 rm -rf %{buildroot}
-cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
-%{__python2} setup.py install -O1 %{?__inst_layout } --root %{buildroot}
+cd $RPM_BUILD_DIR/%{name}-%{version}
+
+%if %{with python3}
+## rm -rf %%{buildroot}
+pushd %{py3dir}
+%py3_install
 
 # Add some directories
 install -d -m 0755 %{buildroot}%{_var}/log/salt
@@ -189,19 +261,19 @@ install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/minion.d
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/pki
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/pki/master
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/pki/minion
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.conf.d
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.deploy.d
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.maps.d
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.profiles.d
-install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/cloud.providers.d
+install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.conf.d
+install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.deploy.d
+install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.maps.d
+install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.profiles.d
+install -d -m 0700 %{buildroot}%{_sysconfdir}/salt/cloud.providers.d
 install -d -m 0755 %{buildroot}%{_sysconfdir}/salt/proxy.d
 
 # Add the config files
 install -p -m 0640 conf/minion %{buildroot}%{_sysconfdir}/salt/minion
 install -p -m 0640 conf/master %{buildroot}%{_sysconfdir}/salt/master
-install -p -m 0640 conf/cloud %{buildroot}%{_sysconfdir}/salt/cloud
+install -p -m 0600 conf/cloud  %{buildroot}%{_sysconfdir}/salt/cloud
 install -p -m 0640 conf/roster %{buildroot}%{_sysconfdir}/salt/roster
-install -p -m 0640 conf/proxy %{buildroot}%{_sysconfdir}/salt/proxy
+install -p -m 0640 conf/proxy  %{buildroot}%{_sysconfdir}/salt/proxy
 
 # Add the unit files
 mkdir -p %{buildroot}%{_unitdir}
@@ -232,32 +304,46 @@ install -p -m 0644  %{SOURCE19} %{buildroot}%{fish_dir}/salt-minion.fish
 install -p -m 0644  %{SOURCE20} %{buildroot}%{fish_dir}/salt-run.fish
 install -p -m 0644  %{SOURCE21} %{buildroot}%{fish_dir}/salt-syndic.fish
 
-%if ((0%{?fedora} >= 28) && 0%{?include_tests})
+popd
+%endif
+
+
+%if (%{with python2} && 0%{with tests})
 %check
-cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
+## cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
+cd $RPM_BUILD_DIR/%{name}-%{version}
 mkdir %{_tmppath}/salt-test-cache
 PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
 %endif
 
+
+%clean
+rm -rf %{buildroot}
+
+
 %files
-%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/LICENSE
-%{python2_sitelib}/%{name}/*
-#%%{python2_sitelib}/%%{name}-%%{version}-py?.?.egg-info
-
-%{python2_sitelib}/%{name}-*-py?.?.egg-info
-
+%if %{with python3}
+%defattr(-,root,root,-)
+%{python3_sitelib}/%{name}/*
+%{python3_sitelib}/%{name}-*-py?.?.egg-info
 %{_sysconfdir}/logrotate.d/salt
 %{_sysconfdir}/bash_completion.d/salt.bash
 %{_var}/cache/salt
 %{_var}/log/salt
-%doc $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}/README.fedora
-%{_bindir}/spm
+
+## %%doc $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}/LICENSE
+## %%doc $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}/README.fedora
+%doc $RPM_BUILD_DIR/python3-%{name}-%{version}-%{release}/LICENSE
+%doc $RPM_BUILD_DIR/python3-%{name}-%{version}-%{release}/README.fedora
+
+/%{_bindir}/spm
 %doc %{_mandir}/man1/spm.1*
 %config(noreplace) %{_sysconfdir}/salt/
 %config(noreplace) %{_sysconfdir}/salt/pki
 %config(noreplace) %{fish_dir}/salt*.fish
 
 %files master
+%defattr(-,root,root)
 %doc %{_mandir}/man7/salt.7*
 %doc %{_mandir}/man1/salt.1*
 %doc %{_mandir}/man1/salt-cp.1*
@@ -277,6 +363,7 @@ PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
 %config(noreplace) %{_sysconfdir}/salt/pki/master
 
 %files minion
+%defattr(-,root,root)
 %doc %{_mandir}/man1/salt-call.1*
 %doc %{_mandir}/man1/salt-minion.1*
 %doc %{_mandir}/man1/salt-proxy.1*
@@ -296,6 +383,7 @@ PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
 %{_unitdir}/salt-syndic.service
 
 %files api
+%defattr(-,root,root)
 %doc %{_mandir}/man1/salt-api.1*
 %{_bindir}/salt-api
 %{_unitdir}/salt-api.service
@@ -314,20 +402,11 @@ PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
 %doc %{_mandir}/man1/salt-ssh.1*
 %{_bindir}/salt-ssh
 %config(noreplace) %{_sysconfdir}/salt/roster
-
-
-%preun master
-%if 0%{?systemd_preun:1}
-  %systemd_preun salt-master.service
-%else
-  if [ $1 -eq 0 ] ; then
-    # Package removal, not upgrade
-    /bin/systemctl --no-reload disable salt-master.service > /dev/null 2>&1 || :
-    /bin/systemctl stop salt-master.service > /dev/null 2>&1 || :
-  fi
 %endif
 
-%preun syndic
+
+# assumes systemd for RHEL 7 & 8
+%preun master
 %if 0%{?systemd_preun:1}
   %systemd_preun salt-syndic.service
 %else
@@ -438,11 +517,69 @@ PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
 
 
 %changelog
+* Mon Feb 03 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-1
+- Update to feature release 3000-1  for Python 3
+- Removed Torando since salt.ext.tornado, add dependencies for Tornado
+
+* Wed Jan 22 2020 SaltStack Packaging Team <packaging@garethgreenaway.com> - 3000.0.0rc2-1
+- Update to Neon Release Candidate 2 for Python 3
+- Updated spec file to not use py3_build  due to '-s' preventing pip installs
+- Updated patch file to support Tornado4
+
+* Wed Jan 08 2020 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.3-1
+- Update to feature release 2019.2.3-1  for Python 3
+
+* Tue Oct 15 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.2-1
+- Update to feature release 2019.2.2-1  for Python 3
+
+* Thu Sep 12 2019 SaltStack Packaging Team <packaging@frogunder.com> - 2019.2.1-1
+- Update to feature release 2019.2.1-1  for Python 3
+
+* Tue Sep 10 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-10
+- Support for point release, added distro as a requirement
+
+* Tue Jul 02 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-9
+- Support for point release, only rpmsign and tornado4 patches
+
+* Thu Jun 06 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-8
+- Support for Redhat 7 need for PyYAML and tornado 4 patch since Tornado < v5.x
+
+* Thu May 23 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-7
+- Patching in support for gpg-agent and passphrase preset
+
+* Wed May 22 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-6
+- Patching in fix for rpmsign
+
+* Thu May 16 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-5
+- Patching in fix for gpg str/bytes to to_unicode/to_bytes
+
+* Tue May 14 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-4
+- Patching in support for Tornado 4
+
+* Mon May 13 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-3
+- Added support for Redhat 8, and removed support for Python 2 packages
+
+* Mon Apr 08 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-2
+- Update to support Python 3.6
+
+* Mon Apr 08 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.4-2
+- Update to allow for Python 3.6
+
 * Mon Mar 04 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2019.2.0-1
 - Update to feature release 2019.2.0-1 for Python 2
 
+* Sat Feb 16 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-1
+- Update to feature release 2019.2.0-1  for Python 3
+
+* Sat Feb 16 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.4-1
+- Update to feature release 2018.3.4-1  for Python 3
+
 * Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2018.3.3-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
+
+* Wed Jan 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-0
+- Update to feature release branch 2019.2.0-0 for Python 2
+- Revised acceptable versions of cherrypy, futures
 
 * Thu Nov 29 2018 SaltStack Packaging Team <packaging@Ch3LL.com> - 2018.3.3-2
 - Revised BuildRequires and Requires to use python2 versions of packages
@@ -450,6 +587,10 @@ PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
 
 * Mon Oct 15 2018 SaltStack Packaging Team <packaging@Ch3LL.com> - 2018.3.3-1
 - Update to feature release 2018.3.3-1 for Python 2
+- Revised versions of cherrypy acceptable
+
+* Tue Oct 09 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.3-1
+- Update to feature release 2018.3.3-1  for Python 3
 - Revised versions of cherrypy acceptable
 
 * Tue Jul 24 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.2-5
@@ -467,9 +608,16 @@ PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
 * Thu Jun 21 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.2-1
 - Update to feature release 2018.3.2-1  for Python 2
 
+* Mon Jun 11 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.1-1
+- Update to feature release 2018.3.1-1  for Python 3
+- Revised minimum msgpack version >= 0.4
+
 * Fri Jun 08 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.1-1
 - Update to feature release 2018.3.1-1  for Python 2
 - Revised minimum msgpack version >= 0.4
+
+* Mon Apr 02 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-1
+- Development build for Python 3 support
 
 * Fri Mar 30 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-1
 - Update to feature release 2018.3.0-1
@@ -481,7 +629,7 @@ PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
 - Update to feature release 2017.7.4-1
 - Limit to Tornado use to between versions 4.2.1 and less than 5.0
 
-* Tue Jan 30 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2017.7.3-1
+* Tue Jan 30 2018 SaltStack Packaging Team <packaging@Ch3LL.com> - 2017.7.3-1
 - Update to feature release 2017.7.3-1
 
 * Mon Sep 18 2017 SaltStack Packaging Team <packaging@saltstack.com> - 2017.7.2-1
