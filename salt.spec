@@ -21,7 +21,7 @@
 
 Name:    salt
 Version: 3000%{?__rc_ver}
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -94,6 +94,11 @@ BuildRequires: python%{python3_pkgversion}-pyyaml
 ## BuildRequires: python%%{python3_pkgversion}-distro
 %endif
 BuildRequires: git
+
+%if 0%{?fedora} >= 31
+BuildRequires: python%{python3_pkgversion}-distro
+Requires: python%{python3_pkgversion}-distro
+%endif
 
 Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.4
@@ -517,6 +522,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Mon Feb 24 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-3
+- Added distro as a build and requires dependency for Fedora >= 31
+
 * Mon Feb 24 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-2
 - Changed dependency for crypto to pycryptodomex
 
