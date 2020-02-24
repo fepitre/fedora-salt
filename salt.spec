@@ -21,7 +21,7 @@
 
 Name:    salt
 Version: 3000%{?__rc_ver}
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -99,9 +99,9 @@ Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.4
 
 ## for dump requirements file
-## Requires: python%{python3_pkgversion}-crypto >= 2.6.1
-
-Requires: python%{python3_pkgversion}-m2crypto >= 0.31.0
+## Requires: python%%{python3_pkgversion}-crypto >= 2.6.1
+## Requires: python%%{python3_pkgversion}-m2crypto >= 0.31.0
+Requires: python%{python3_pkgversion}-pycryptodomex >= 3.7
 
 Requires: python%{python3_pkgversion}-requests
 Requires: python%{python3_pkgversion}-zmq
@@ -517,6 +517,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Mon Feb 24 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-2
+- Changed dependency for crypto to pycryptodomex
+
 * Mon Feb 03 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-1
 - Update to feature release 3000-1  for Python 3
 - Removed Torando since salt.ext.tornado, add dependencies for Tornado
