@@ -12,8 +12,6 @@
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 %endif
 
-%global include_tests 0
-
 # Release Candidate
 %define __rc_ver %{nil}
 
@@ -21,7 +19,7 @@
 
 Name:    salt
 Version: 3000%{?__rc_ver}
-Release: 4%{?dist}
+Release: 5%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -122,12 +120,8 @@ Requires: python%{python3_pkgversion}-pycurl
 
 Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
-%if 0%{?rhel} == 7
-Requires: python%{python3_pkgversion}-PyYAML
-%else
 Requires: python%{python3_pkgversion}-pyyaml
 Requires: python%{python3_pkgversion}-distro
-%endif
 %endif
 
 
@@ -145,11 +139,7 @@ servers, handle them quickly and through a simple and manageable interface.
 Summary:    Management component for salt, a parallel remote execution system
 Group:      System Environment/Daemons
 Requires:   %{name} = %{version}-%{release}
-%if 0%{?rhel} > 7
-Requires: python%{python3_pkgversion}-systemd
-%else
-Requires: systemd-python
-%endif
+Requires:   python%{python3_pkgversion}-systemd
 
 %description master
 The Salt master is the central server to which all minions connect.
@@ -518,6 +508,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Tue Feb 25 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-5
+- Fix lint clean up issues
+
 * Tue Feb 25 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-4
 - Removed cherrypy < 18.0.0 check since python 3.5 no longer used on Fedora
 
