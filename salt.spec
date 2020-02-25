@@ -21,7 +21,7 @@
 
 Name:    salt
 Version: 3000%{?__rc_ver}
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -183,11 +183,7 @@ Supports Python 3.
 Summary:    REST API for Salt, a parallel remote execution system
 Group:      Applications/System
 Requires:   %{name}-master = %{version}-%{release}
-%if ( "%{python3_pkgversion}" < "35" )
-Requires: python%{python3_pkgversion}-cherrypy >= 3.2.2, python%{python3_pkgversion}-cherrypy < 18.0.0
-%else
-Requires: python%{python3_pkgversion}-cherrypy >= 3.2.2
-%endif
+Requires:   python%{python3_pkgversion}-cherrypy >= 3.2.2
 
 %description api
 salt-api provides a REST interface to the Salt master.
@@ -522,6 +518,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Tue Feb 25 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-4
+- Removed cherrypy < 18.0.0 check since python 3.5 no longer used on Fedora
+
 * Mon Feb 24 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-3
 - Added distro as a build and requires dependency for Fedora >= 31
 
