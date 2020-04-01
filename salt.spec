@@ -12,16 +12,14 @@
 %{!?python3_pkgversion:%global python3_pkgversion 3}
 %endif
 
-%global include_tests 0
-
 # Release Candidate
 %define __rc_ver %{nil}
 
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name:    salt
-Version: 3000%{?__rc_ver}
-Release: 2%{?dist}
+Version: 3000.1%{?__rc_ver}
+Release: 1%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -95,6 +93,11 @@ BuildRequires: python%{python3_pkgversion}-pyyaml
 %endif
 BuildRequires: git
 
+%if 0%{?fedora} >= 31
+BuildRequires: python%{python3_pkgversion}-distro
+Requires: python%{python3_pkgversion}-distro
+%endif
+
 Requires: python%{python3_pkgversion}-jinja2
 Requires: python%{python3_pkgversion}-msgpack >= 0.4
 
@@ -117,12 +120,8 @@ Requires: python%{python3_pkgversion}-pycurl
 
 Requires: python%{python3_pkgversion}-six
 Requires: python%{python3_pkgversion}-psutil
-%if 0%{?rhel} == 7
-Requires: python%{python3_pkgversion}-PyYAML
-%else
 Requires: python%{python3_pkgversion}-pyyaml
 Requires: python%{python3_pkgversion}-distro
-%endif
 %endif
 
 
@@ -140,11 +139,7 @@ servers, handle them quickly and through a simple and manageable interface.
 Summary:    Management component for salt, a parallel remote execution system
 Group:      System Environment/Daemons
 Requires:   %{name} = %{version}-%{release}
-%if 0%{?rhel} > 7
 Requires: python%{python3_pkgversion}-systemd
-%else
-Requires: systemd-python
-%endif
 
 %description master
 The Salt master is the central server to which all minions connect.
@@ -178,11 +173,7 @@ Supports Python 3.
 Summary:    REST API for Salt, a parallel remote execution system
 Group:      Applications/System
 Requires:   %{name}-master = %{version}-%{release}
-%if ( "%{python3_pkgversion}" < "35" )
-Requires: python%{python3_pkgversion}-cherrypy >= 3.2.2, python%{python3_pkgversion}-cherrypy < 18.0.0
-%else
-Requires: python%{python3_pkgversion}-cherrypy >= 3.2.2
-%endif
+Requires:   python%{python3_pkgversion}-cherrypy >= 3.2.2
 
 %description api
 salt-api provides a REST interface to the Salt master.
@@ -215,7 +206,7 @@ Supports Python 3.
 
 %prep
 ## %%autosetup
-%setup -q -c
+%setup -c
 cd %{name}-%{version}
 ## %%if 0%%{?rhel} > 7
 ## %%patch0 -p1
@@ -310,7 +301,7 @@ popd
 
 %if (%{with python2} && 0%{with tests})
 %check
-## cd $RPM_BUILD_DIR/%%{name}-%%{version}/%%{name}-%%{version}
+## cd $RPM_BUILD_DIR/%{name}-%{version}/%{name}-%{version}
 cd $RPM_BUILD_DIR/%{name}-%{version}
 mkdir %{_tmppath}/salt-test-cache
 PYTHONPATH=%{pythonpath} %{__python2} setup.py test --runtests-opts=-u
@@ -517,6 +508,18 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Wed Apr 01 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000.1-1
+- Update to feature release 3000.1-1  for Python 3
+
+* Tue Feb 25 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-5
+- Fix lint clean up issues
+
+* Tue Feb 25 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-4
+- Removed cherrypy < 18.0.0 check since python 3.5 no longer used on Fedora
+
+* Mon Feb 24 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-3
+- Added distro as a build and requires dependency for Fedora >= 31
+
 * Mon Feb 24 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-2
 - Changed dependency for crypto to pycryptodomex
 
@@ -568,69 +571,26 @@ rm -rf %{buildroot}
 * Mon Apr 08 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.4-2
 - Update to allow for Python 3.6
 
-* Mon Mar 04 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2019.2.0-1
-- Update to feature release 2019.2.0-1 for Python 2
-
 * Sat Feb 16 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-1
 - Update to feature release 2019.2.0-1  for Python 3
 
 * Sat Feb 16 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.4-1
 - Update to feature release 2018.3.4-1  for Python 3
 
-* Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2018.3.3-3
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
-
 * Wed Jan 09 2019 SaltStack Packaging Team <packaging@saltstack.com> - 2019.2.0-0
 - Update to feature release branch 2019.2.0-0 for Python 2
 - Revised acceptable versions of cherrypy, futures
-
-* Thu Nov 29 2018 SaltStack Packaging Team <packaging@Ch3LL.com> - 2018.3.3-2
-- Revised BuildRequires and Requires to use python2 versions of packages
-- Cleaned up spec file to apply to Fedora 28 and above
-
-* Mon Oct 15 2018 SaltStack Packaging Team <packaging@Ch3LL.com> - 2018.3.3-1
-- Update to feature release 2018.3.3-1 for Python 2
-- Revised versions of cherrypy acceptable
 
 * Tue Oct 09 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.3-1
 - Update to feature release 2018.3.3-1  for Python 3
 - Revised versions of cherrypy acceptable
 
-* Tue Jul 24 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.2-5
-- Fix version of python used, multiple addition of 2.7 
-
-* Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2018.3.2-4
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
-
-* Mon Jul 09 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.2-3
-- Allow for removal of /usr/bin/python
-
-* Mon Jul 09 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.2-2
-- Correct tornado version check
-
-* Thu Jun 21 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.2-1
-- Update to feature release 2018.3.2-1  for Python 2
-
 * Mon Jun 11 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.1-1
 - Update to feature release 2018.3.1-1  for Python 3
 - Revised minimum msgpack version >= 0.4
 
-* Fri Jun 08 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.1-1
-- Update to feature release 2018.3.1-1  for Python 2
-- Revised minimum msgpack version >= 0.4
-
 * Mon Apr 02 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-1
 - Development build for Python 3 support
-
-* Fri Mar 30 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2018.3.0-1
-- Update to feature release 2018.3.0-1
-
-* Tue Mar 27 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2017.7.5-1
-- Update to feature release 2017.7.5-1
-
-* Fri Feb 16 2018 SaltStack Packaging Team <packaging@saltstack.com> - 2017.7.4-1
-- Update to feature release 2017.7.4-1
-- Limit to Tornado use to between versions 4.2.1 and less than 5.0
 
 * Tue Jan 30 2018 SaltStack Packaging Team <packaging@Ch3LL.com> - 2017.7.3-1
 - Update to feature release 2017.7.3-1
