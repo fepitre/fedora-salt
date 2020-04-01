@@ -18,8 +18,8 @@
 %define fish_dir %{_datadir}/fish/vendor_functions.d
 
 Name:    salt
-Version: 3000%{?__rc_ver}
-Release: 5%{?dist}
+Version: 3000.1%{?__rc_ver}
+Release: 1%{?dist}
 Summary: A parallel remote execution system
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -139,7 +139,7 @@ servers, handle them quickly and through a simple and manageable interface.
 Summary:    Management component for salt, a parallel remote execution system
 Group:      System Environment/Daemons
 Requires:   %{name} = %{version}-%{release}
-Requires:   python%{python3_pkgversion}-systemd
+Requires: python%{python3_pkgversion}-systemd
 
 %description master
 The Salt master is the central server to which all minions connect.
@@ -508,6 +508,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Wed Apr 01 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000.1-1
+- Update to feature release 3000.1-1  for Python 3
+
 * Tue Feb 25 2020 SaltStack Packaging Team <packaging@frogunder.com> - 3000-5
 - Fix lint clean up issues
 
